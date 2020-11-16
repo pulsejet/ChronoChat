@@ -72,6 +72,7 @@ namespace name = ndn::name;
 namespace time = ndn::time;
 
 typedef function<void(const shared_ptr<const Data>&)> OnDataValidated;
+typedef function<void(const shared_ptr<const Data>&, const std::string&)> OnDataValidationFailed;
 typedef function<void(const shared_ptr<const Interest>&)> OnInterestValidated;
 
 } // namespace chronochat

@@ -23,6 +23,7 @@
 #include "endorse-collection.hpp"
 #include <ndn-cxx/security/key-chain.hpp>
 #include <ndn-cxx/security/validator.hpp>
+#include <ndn-cxx/face.hpp>
 #include <boost/thread/locks.hpp>
 #include <boost/thread/recursive_mutex.hpp>
 #endif
@@ -54,7 +55,7 @@ public:
     contactList.insert(contactList.end(), m_contactList.begin(), m_contactList.end());
   }
 private:
-  shared_ptr<ndn::IdentityCertificate>
+  shared_ptr<ndn::security::v2::Certificate>
   loadTrustAnchor();
 
   void
@@ -97,7 +98,7 @@ private:
 
   // PROFILE-CERT: endorse-certificate
   void
-  onEndorseCertificateInternal(const Interest& interest, Data& data,
+  onEndorseCertificateInternal(const Interest& interest, const Data& data,
                                const Name& identity, size_t certIndex,
                                std::string hash);
 
@@ -156,22 +157,22 @@ private:
   // Communication
   void
   sendInterest(const Interest& interest,
-               const ndn::OnDataValidated& onValidated,
-               const ndn::OnDataValidationFailed& onValidationFailed,
+               const OnDataValidated& onValidated,
+               const OnDataValidationFailed& onValidationFailed,
                const TimeoutNotify& timeoutNotify,
                int retry = 1);
 
   void
   onTargetData(const Interest& interest,
                const Data& data,
-               const ndn::OnDataValidated& onValidated,
-               const ndn::OnDataValidationFailed& onValidationFailed);
+               const OnDataValidated& onValidated,
+               const OnDataValidationFailed& onValidationFailed);
 
   void
   onTargetTimeout(const Interest& interest,
                   int retry,
-                  const ndn::OnDataValidated& onValidated,
-                  const ndn::OnDataValidationFailed& onValidationFailed,
+                  const OnDataValidated& onValidated,
+                  const OnDataValidationFailed& onValidationFailed,
                   const TimeoutNotify& timeoutNotify);
 
   // DNS listener
@@ -195,7 +196,7 @@ signals:
   nameListReady(const QStringList& certNameList);
 
   void
-  idCertReady(const ndn::IdentityCertificate& idCert);
+  idCertReady(const ndn::security::v2::Certificate& idCert);
 
   void
   contactAliasListReady(const QStringList& aliasList);
@@ -263,14 +264,14 @@ private:
   };
 
   typedef std::map<Name, FetchedInfo> BufferedContacts;
-  typedef std::map<Name, shared_ptr<ndn::IdentityCertificate> > BufferedIdCerts;
+  typedef std::map<Name, shared_ptr<ndn::security::v2::Certificate> > BufferedIdCerts;
 
   typedef boost::recursive_mutex RecLock;
   typedef boost::unique_lock<RecLock> UniqueRecLock;
 
   // Conf
   shared_ptr<ContactStorage> m_contactStorage;
-  shared_ptr<ndn::Validator> m_validator;
+  shared_ptr<ndn::security::v2::Validator> m_validator;
   ndn::Face& m_face;
   ndn::KeyChain m_keyChain;
   Name m_identity;
@@ -281,7 +282,7 @@ private:
   BufferedIdCerts m_bufferedIdCerts;
 
   // Tmp Dns
-  const ndn::RegisteredPrefixId* m_dnsListenerId;
+  shared_ptr<ndn::RegisteredPrefixHandle> m_dnsListenerId;
 
   RecLock m_collectCountMutex;
   size_t m_collectCount;
