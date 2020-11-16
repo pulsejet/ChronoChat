@@ -14,6 +14,7 @@
 #include "common.hpp"
 #include <ndn-cxx/security/certificate.hpp>
 #include <ndn-cxx/util/regex.hpp>
+#include "endorse-certificate.hpp"
 #include "profile.hpp"
 
 namespace chronochat {
@@ -39,6 +40,24 @@ public:
     m_keyName = identityCertificate.getKeyName();
     m_namespace = m_keyName.getPrefix(-1);
     m_publicKey = identityCertificate.getPublicKey();
+  }
+
+  Contact(const EndorseCertificate& endorseCertificate,
+          bool isIntroducer = false,
+          const std::string& alias = "")
+    : m_notBefore(endorseCertificate.getValidityPeriod().getPeriod().first)
+    , m_notAfter(endorseCertificate.getValidityPeriod().getPeriod().second)
+    , m_isIntroducer(isIntroducer)
+  {
+    m_profile = endorseCertificate.getProfile();
+
+    m_name = m_profile.get("name");
+    m_alias = alias.empty() ? m_name : alias;
+    m_institution = m_profile.get("institution");
+
+    m_keyName = endorseCertificate.getPublicKeyName();;
+    m_namespace = m_keyName.getPrefix(-1);
+    m_publicKey = endorseCertificate.getPublicKey();
   }
 
   Contact(const Name& identity,

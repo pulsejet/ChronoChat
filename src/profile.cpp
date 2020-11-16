@@ -29,7 +29,7 @@ const std::string Profile::OID_EMAIL("1.2.840.113549.1.9.1");
 
 Profile::Profile(const Certificate& identityCertificate)
 {
-  Name keyName = identityCertificate.getName();
+  Name keyName = identityCertificate.getKeyName();
 
   m_entries[string("IDENTITY")] = keyName.getPrefix(-1).toUri();
 }

@@ -13,10 +13,7 @@
 
 #include <boost/filesystem.hpp>
 #include "cryptopp.hpp"
-#include "logging.h"
 
-
-// INIT_LOGGER ("chronochat.ContactStorage");
 
 namespace chronochat {
 
@@ -24,8 +21,6 @@ namespace fs = boost::filesystem;
 
 using std::string;
 using std::vector;
-
-using ndn::PublicKey;
 
 // user's own profile;
 const string INIT_SP_TABLE =
@@ -159,7 +154,7 @@ sqlite3_column_string(sqlite3_stmt* statement, int column)
 static Block
 sqlite3_column_block(sqlite3_stmt* statement, int column)
 {
-  return Block(reinterpret_cast<const char*>(sqlite3_column_blob(statement, column)),
+  return Block(reinterpret_cast<const uint8_t*>(sqlite3_column_blob(statement, column)),
                sqlite3_column_bytes(statement, column));
 }
 
@@ -375,8 +370,8 @@ ContactStorage::addContact(const Contact& contact)
   sqlite3_bind_string(stmt, 2, contact.getAlias(), SQLITE_TRANSIENT);
   sqlite3_bind_string(stmt, 3, contact.getPublicKeyName().toUri(), SQLITE_TRANSIENT);
   sqlite3_bind_text(stmt, 4,
-                    reinterpret_cast<const char*>(contact.getPublicKey().get().buf()),
-                    contact.getPublicKey().get().size(), SQLITE_TRANSIENT);
+                    reinterpret_cast<const char*>(contact.getPublicKey().data()),
+                    contact.getPublicKey().size(), SQLITE_TRANSIENT);
   sqlite3_bind_int64(stmt, 5, time::toUnixTimestamp(contact.getNotBefore()).count());
   sqlite3_bind_int64(stmt, 6, time::toUnixTimestamp(contact.getNotAfter()).count());
   sqlite3_bind_int(stmt, 7, (isIntroducer ? 1 : 0));
@@ -433,7 +428,7 @@ ContactStorage::getContact(const Name& identity) const
   if (sqlite3_step(stmt) == SQLITE_ROW) {
     string alias = sqlite3_column_string(stmt, 0);
     string keyName = sqlite3_column_string(stmt, 1);
-    PublicKey key(sqlite3_column_text(stmt, 2), sqlite3_column_bytes (stmt, 2));
+    ndn::Buffer key(sqlite3_column_text(stmt, 2), sqlite3_column_bytes (stmt, 2));
     time::system_clock::TimePoint notBefore =
       time::fromUnixTimestamp(time::milliseconds(sqlite3_column_int64 (stmt, 3)));
     time::system_clock::TimePoint notAfter =
