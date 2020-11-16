@@ -28,8 +28,7 @@
 INIT_LOGGER("chronochat.Controller");
 
 Q_DECLARE_METATYPE(ndn::Name)
-Q_DECLARE_METATYPE(ndn::IdentityCertificate)
-Q_DECLARE_METATYPE(chronochat::EndorseInfo)
+Q_DECLARE_METATYPE(ndn::security::v2::Certificate)
 Q_DECLARE_METATYPE(ndn::Interest)
 Q_DECLARE_METATYPE(size_t)
 Q_DECLARE_METATYPE(chronochat::ChatroomInfo)
@@ -57,8 +56,7 @@ Controller::Controller(QWidget* parent)
   , m_discoveryPanel(new DiscoveryPanel(this))
 {
   qRegisterMetaType<ndn::Name>("ndn.Name");
-  qRegisterMetaType<ndn::IdentityCertificate>("ndn.IdentityCertificate");
-  qRegisterMetaType<chronochat::EndorseInfo>("chronochat.EndorseInfo");
+  qRegisterMetaType<ndn::security::v2::Certificate>("ndn.security.v2.Certificate");
   qRegisterMetaType<ndn::Interest>("ndn.Interest");
   qRegisterMetaType<size_t>("size_t");
   qRegisterMetaType<chronochat::ChatroomInfo>("chronochat.Chatroom");
@@ -126,8 +124,8 @@ Controller::Controller(QWidget* parent)
           m_browseContactDialog, SLOT(onIdCertNameListReady(const QStringList&)));
   connect(m_backend.getContactManager(), SIGNAL(nameListReady(const QStringList&)),
           m_browseContactDialog, SLOT(onNameListReady(const QStringList&)));
-  connect(m_backend.getContactManager(), SIGNAL(idCertReady(const ndn::IdentityCertificate&)),
-          m_browseContactDialog, SLOT(onIdCertReady(const ndn::IdentityCertificate&)));
+  connect(m_backend.getContactManager(), SIGNAL(idCertReady(const ndn::security::v2::Certificate&)),
+          m_browseContactDialog, SLOT(onIdCertReady(const ndn::security::v2::Certificate&)));
 
   // Connection to ContactPanel
   connect(m_contactPanel, SIGNAL(waitForContactList()),
@@ -323,15 +321,9 @@ Controller::loadConf()
       m_nick = m_identity.get(-1).toUri();
   }
   catch (tlv::Error) {
-    try {
-      ndn::KeyChain keyChain;
-      m_identity = keyChain.getDefaultIdentity();
-    }
-    catch (ndn::KeyChain::Error) {
-      m_identity.clear();
-      m_identity.append("chronochat-tmp-identity")
-        .append(getRandomString());
-    }
+    m_identity.clear();
+    m_identity.append("chronochat-tmp-identity")
+              .append(getRandomString());
     m_nick = m_identity.get(-1).toUri();
   }
 }
@@ -804,7 +796,7 @@ Controller::onNfdError()
   if (m_isInConnectionDetection)
     return;
   // begin a thread
-  
+
   m_isInConnectionDetection = true;
   m_nfdConnectionChecker = new NfdConnectionChecker(this);
 

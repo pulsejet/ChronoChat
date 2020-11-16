@@ -22,8 +22,9 @@
 #include "invitation.hpp"
 #include "validator-invitation.hpp"
 #include <ndn-cxx/security/key-chain.hpp>
-#include <ndn-cxx/util/in-memory-storage-persistent.hpp>
+#include <ndn-cxx/ims/in-memory-storage-persistent.hpp>
 #include <ndn-cxx/security/validator-null.hpp>
+#include <ndn-cxx/face.hpp>
 #include <boost/thread.hpp>
 #include <mutex>
 #endif
@@ -90,7 +91,7 @@ private:
   updateLocalPrefix(const Name& localPrefix);
 
   void
-  onRequestResponse(const Interest& interest, Data& data);
+  onRequestResponse(const Interest& interest, const Data& data);
 
   void
   onRequestTimeout(const Interest& interest, int& resendTimes);
@@ -167,11 +168,11 @@ private:
   // Security related;
   ndn::KeyChain m_keyChain;
   ValidatorInvitation m_validator;
-  ndn::ValidatorNull m_nullValidator;
+  ndn::security::v2::ValidatorNull m_nullValidator;
 
   // RegisteredPrefixId
-  const ndn::RegisteredPrefixId* m_invitationListenerId;
-  const ndn::RegisteredPrefixId* m_requestListenerId;
+  shared_ptr<ndn::RegisteredPrefixHandle> m_invitationListenerId;
+  shared_ptr<ndn::RegisteredPrefixHandle> m_requestListenerId;
 
   // ChatRoomList
   QStringList m_chatDialogList;
@@ -180,7 +181,7 @@ private:
   std::mutex m_resumeMutex;
   std::mutex m_nfdConnectionMutex;
 
-  ndn::util::InMemoryStoragePersistent m_ims;
+  ndn::InMemoryStoragePersistent m_ims;
 };
 
 } // namespace chronochat

@@ -16,12 +16,11 @@
 #ifndef Q_MOC_RUN
 #include <boost/iostreams/stream.hpp>
 #include <ndn-cxx/util/io.hpp>
-#include <ndn-cxx/security/validator-regex.hpp>
-#include "logging.h"
+#include "cryptopp.hpp"
+#include <iostream>
 #endif
 
-
-INIT_LOGGER("ChatDialogBackend");
+using namespace CryptoPP;
 
 namespace chronochat {
 
@@ -117,26 +116,9 @@ ChatDialogBackend::initializeSync()
   m_scheduler = unique_ptr<ndn::Scheduler>(new ndn::Scheduler(m_face->getIoService()));
 
   // initialize validator
-  shared_ptr<ndn::IdentityCertificate> anchor = loadTrustAnchor();
+  shared_ptr<ndn::security::v2::Certificate> anchor = loadTrustAnchor();
 
-  if (static_cast<bool>(anchor)) {
-    shared_ptr<ndn::ValidatorRegex> validator =
-      make_shared<ndn::ValidatorRegex>(m_face.get()); // TODO: Change to Face*
-    validator->addDataVerificationRule(
-      make_shared<ndn::SecRuleRelative>("^<>*<%F0.>(<>*)$",
-                                        "^([^<KEY>]*)<KEY>(<>*)<ksk-.*><ID-CERT>$",
-                                        ">", "\\1", "\\1\\2", true));
-    validator->addDataVerificationRule(
-      make_shared<ndn::SecRuleRelative>("(<>*)$",
-                                        "^([^<KEY>]*)<KEY>(<>*)<ksk-.*><ID-CERT>$",
-                                        ">", "\\1", "\\1\\2", true));
-    validator->addTrustAnchor(anchor);
-
-    m_validator = validator;
-  }
-  else
-    m_validator = shared_ptr<ndn::Validator>();
-
+  m_validator = shared_ptr<ndn::security::v2::Validator>();
 
   // create a new SyncSocket
   m_sock = make_shared<chronosync::Socket>(m_chatroomPrefix,
@@ -147,12 +129,12 @@ ChatDialogBackend::initializeSync()
                                            m_validator);
 
   // schedule a new join event
-  m_scheduler->scheduleEvent(time::milliseconds(600),
-                             bind(&ChatDialogBackend::sendJoin, this));
+  m_scheduler->schedule(time::milliseconds(600),
+                        bind(&ChatDialogBackend::sendJoin, this));
 
   // cancel existing hello event if it exists
-  if (m_helloEventId != nullptr) {
-    m_scheduler->cancelEvent(m_helloEventId);
+  if (m_helloEventId) {
+    m_helloEventId.cancel();
     m_helloEventId.reset();
   }
 }
@@ -178,7 +160,7 @@ private:
   QIODevice& m_source;
 };
 
-shared_ptr<ndn::IdentityCertificate>
+shared_ptr<ndn::security::v2::Certificate>
 ChatDialogBackend::loadTrustAnchor()
 {
   QFile anchorFile(":/security/anchor.cert");
@@ -188,7 +170,7 @@ ChatDialogBackend::loadTrustAnchor()
   }
 
   boost::iostreams::stream<IoDeviceSource> anchorFileStream(anchorFile);
-  return ndn::io::load<ndn::IdentityCertificate>(anchorFileStream);
+  return ndn::io::load<ndn::security::v2::Certificate>(anchorFileStream);
 }
 
 void
@@ -212,8 +194,6 @@ ChatDialogBackend::close()
 void
 ChatDialogBackend::processSyncUpdate(const std::vector<chronosync::MissingDataInfo>& updates)
 {
-  _LOG_DEBUG("<<< processing Tree Update");
-
   if (updates.empty()) {
     return;
   }
@@ -232,27 +212,26 @@ ChatDialogBackend::processSyncUpdate(const std::vector<chronosync::MissingDataIn
     if (updates[i].high - updates[i].low < 3) {
       for (chronosync::SeqNo seq = updates[i].low; seq <= updates[i].high; ++seq) {
         m_sock->fetchData(updates[i].session, seq,
-                          [this] (const shared_ptr<const ndn::Data>& data) {
-                            this->processChatData(data, true, true);
+                          [this] (const ndn::Data& data) {
+                            this->processChatData(make_shared<ndn::Data>(data), true, true);
                           },
-                          [this] (const shared_ptr<const ndn::Data>& data, const std::string& msg) {
-                            this->processChatData(data, true, false);
+                          [this] (const ndn::Data& data, const chronosync::ValidationError& error) {
+                            this->processChatData(make_shared<ndn::Data>(data), true, false);
                           },
-                          ndn::OnTimeout(),
+                          NULL,
                           2);
-        _LOG_DEBUG("<<< Fetching " << updates[i].session << "/" << seq);
       }
     }
     else {
       // There are too many msgs to fetch, let's just fetch the latest one
       m_sock->fetchData(updates[i].session, updates[i].high,
-                        [this] (const shared_ptr<const ndn::Data>& data) {
-                          this->processChatData(data, false, true);
+                        [this] (const ndn::Data& data) {
+                          this->processChatData(make_shared<ndn::Data>(data), false, true);
                         },
-                        [this] (const shared_ptr<const ndn::Data>& data, const std::string& msg) {
-                          this->processChatData(data, false, false);
+                        [this] (const ndn::Data& data, const chronosync::ValidationError& error) {
+                          this->processChatData(make_shared<ndn::Data>(data), false, false);
                         },
-                        ndn::OnTimeout(),
+                        NULL,
                         2);
     }
 
@@ -274,8 +253,6 @@ ChatDialogBackend::processChatData(const ndn::shared_ptr<const ndn::Data>& data,
     msg.wireDecode(data->getContent().blockFromValue());
   }
   catch (tlv::Error) {
-    _LOG_DEBUG("Errrrr.. Can not parse msg with name: " <<
-               data->getName() << ". what is happening?");
     // nasty stuff: as a remedy, we'll form some standard msg for inparsable msgs
     msg.setNick("inconnu");
     msg.setMsgType(ChatMessage::OTHER);
@@ -290,7 +267,7 @@ ChatDialogBackend::processChatData(const ndn::shared_ptr<const ndn::Data>& data,
     if (it != m_roster.end()) {
       // cancel timeout event
       if (static_cast<bool>(it->second.timeoutEventId))
-        m_scheduler->cancelEvent(it->second.timeoutEventId);
+        it->second.timeoutEventId.cancel();
 
       // notify frontend to remove the remote session (node)
       emit sessionRemoved(QString::fromStdString(remoteSessionPrefix.toUri()),
@@ -316,13 +293,13 @@ ChatDialogBackend::processChatData(const ndn::shared_ptr<const ndn::Data>& data,
 
     // If a timeout event has been scheduled, cancel it.
     if (static_cast<bool>(it->second.timeoutEventId))
-      m_scheduler->cancelEvent(it->second.timeoutEventId);
+      it->second.timeoutEventId.cancel();
 
     // (Re)schedule another timeout event after 3 HELLO_INTERVAL;
     it->second.timeoutEventId =
-      m_scheduler->scheduleEvent(HELLO_INTERVAL * 3,
-                                 bind(&ChatDialogBackend::remoteSessionTimeout,
-                                      this, remoteSessionPrefix));
+      m_scheduler->schedule(HELLO_INTERVAL * 3,
+                            bind(&ChatDialogBackend::remoteSessionTimeout,
+                                 this, remoteSessionPrefix));
 
     // If chat message, notify the frontend
     if (msg.getMsgType() == ChatMessage::CHAT) {
@@ -414,8 +391,8 @@ ChatDialogBackend::sendJoin()
   prepareControlMessage(msg, ChatMessage::JOIN);
   sendMsg(msg);
 
-  m_helloEventId = m_scheduler->scheduleEvent(HELLO_INTERVAL,
-                                              bind(&ChatDialogBackend::sendHello, this));
+  m_helloEventId = m_scheduler->schedule(HELLO_INTERVAL,
+                                         bind(&ChatDialogBackend::sendHello, this));
   emit newChatroomForDiscovery(Name::Component(m_chatroomName));
 }
 
@@ -426,8 +403,8 @@ ChatDialogBackend::sendHello()
   prepareControlMessage(msg, ChatMessage::HELLO);
   sendMsg(msg);
 
-  m_helloEventId = m_scheduler->scheduleEvent(HELLO_INTERVAL,
-                                              bind(&ChatDialogBackend::sendHello, this));
+  m_helloEventId = m_scheduler->schedule(HELLO_INTERVAL,
+                                         bind(&ChatDialogBackend::sendHello, this));
 }
 
 void
@@ -489,7 +466,7 @@ ChatDialogBackend::getHexEncodedDigest(ndn::ConstBufferPtr digest)
 {
   std::stringstream os;
 
-  CryptoPP::StringSource(digest->buf(), digest->size(), true,
+  CryptoPP::StringSource(digest->data(), digest->size(), true,
                          new CryptoPP::HexEncoder(new CryptoPP::FileSink(os), false));
   return os.str();
 }
