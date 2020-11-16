@@ -12,6 +12,7 @@
 #include "digest-tree-scene.hpp"
 
 #include <QtGui>
+#include <QGraphicsTextItem>
 
 #ifndef Q_MOC_RUN
 #include <vector>
@@ -28,7 +29,7 @@ static const int NODE_SIZE = 40;
 
 //DisplayUserPtr DisplayUserNullPtr;
 
-DigestTreeScene::DigestTreeScene(QWidget *parent)
+DigestTreeScene::DigestTreeScene(QObject *parent)
   : QGraphicsScene(parent)
 {
   m_previouslyUpdatedUser = DisplayUserNullPtr;

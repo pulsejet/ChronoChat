@@ -7,10 +7,10 @@ import os
 
 def options(opt):
 
-    opt.load(['compiler_c', 'compiler_cxx', 'qt4', 'gnu_dirs'])
+    opt.load(['compiler_c', 'compiler_cxx', 'qt5', 'gnu_dirs'])
 
     opt.load(['default-compiler-flags', 'boost', 'protoc',
-              'doxygen', 'sphinx_build'],
+              'doxygen', 'sphinx_build', 'qt5'],
               tooldir=['waf-tools'])
 
     opt = opt.add_option_group('ChronotChat Options')
@@ -22,7 +22,7 @@ def options(opt):
                    help='''Enable log4cxx''')
 
 def configure(conf):
-    conf.load(['compiler_c', 'compiler_cxx', 'qt4',
+    conf.load(['compiler_c', 'compiler_cxx', 'qt5',
                'default-compiler-flags', 'boost', 'protoc', 'gnu_dirs',
                'doxygen', 'sphinx_build'])
 
@@ -53,7 +53,7 @@ def configure(conf):
     conf.write_config_header('src/config.h')
 
 def build (bld):
-    feature_list = 'qt4 cxx'
+    feature_list = 'qt5 cxx'
     if bld.env["WITH_TESTS"]:
         feature_list += ' cxxstlib'
     else:
@@ -64,8 +64,10 @@ def build (bld):
         features = feature_list,
         defines = "WAF=1",
         source = bld.path.ant_glob(['src/*.cpp', 'src/*.ui', '*.qrc', 'logging.cc', 'src/*.proto']),
+        cxxflags  = ['-std=c++14', '-Wfatal-errors'],
+        ldflags = ['-lcrypto++'],
         includes = "src .",
-        use = "QTCORE QTGUI QTWIDGETS QTSQL NDN_CXX BOOST LOG4CXX SYNC",
+        use = "QT5CORE QT5GUI QT5WIDGETS QT5SQL NDN_CXX BOOST LOG4CXX SYNC",
         )
 
     # Unit tests

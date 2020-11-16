@@ -15,6 +15,7 @@
 #include <ndn-cxx/util/concepts.hpp>
 #include <ndn-cxx/encoding/block.hpp>
 #include <ndn-cxx/encoding/encoding-buffer.hpp>
+#include <ndn-cxx/encoding/encoding-buffer-fwd.hpp>
 
 namespace chronochat {
 
@@ -60,7 +61,7 @@ public:
   addEndorsement(const std::string& type, const std::string& value, const std::string& count);
 
 private:
-  template<bool T>
+  template<ndn::encoding::Tag T>
   size_t
   wireEncode(ndn::EncodingImpl<T>& block) const;
 

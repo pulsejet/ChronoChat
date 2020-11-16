@@ -21,7 +21,6 @@
 #include <ndn-cxx/util/time.hpp>
 #include <ndn-cxx/util/io.hpp>
 #include "cryptopp.hpp"
-#include "endorse-certificate.hpp"
 
 namespace chronochat {
 namespace tests {
