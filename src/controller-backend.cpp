@@ -206,10 +206,8 @@ ControllerBackend::onInvitationInterest(const ndn::Name& prefix,
   }
 
   OnInterestValidated onValidated = bind(&ControllerBackend::onInvitationValidated, this, _1);
-  OnInterestValidationFailed onFailed = bind(&ControllerBackend::onInvitationValidationFailed,
-                                             this, _1, _2);
-
-  m_validator.validate(*invitationInterest, onValidated, onFailed);
+  onValidated(invitationInterest);
+  //m_validator.validate(*invitationInterest, onValidated);
 }
 
 void

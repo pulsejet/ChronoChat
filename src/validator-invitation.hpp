@@ -15,28 +15,25 @@
 
 #include <ndn-cxx/security/validator.hpp>
 #include <ndn-cxx/security/certificate-cache.hpp>
-#include <ndn-cxx/security/sec-rule-relative.hpp>
-
-#include "endorse-certificate.hpp"
 
 namespace chronochat {
 
-class ValidatorInvitation : public ndn::Validator
+class ValidatorInvitation
 {
   typedef function<void(const std::string&)> OnValidationFailed;
   typedef function<void()> OnValidated;
 
 public:
-  class Error : public ndn::Validator::Error
+  class Error : public ndn::security::v2::ValidationError
   {
   public:
     Error(const std::string& what)
-      : ndn::Validator::Error(what)
+      : ndn::security::v2::ValidationError(0, what)
     {
     }
   };
 
-  static const shared_ptr<ndn::CertificateCache> DefaultCertificateCache;
+  static const shared_ptr<ndn::security::v2::CertificateCache> DefaultCertificateCache;
 
   ValidatorInvitation();
 
@@ -46,7 +43,7 @@ public:
   }
 
   void
-  addTrustAnchor(const Name& keyName, const ndn::PublicKey& key);
+  addTrustAnchor(const Name& keyName, const ndn::Buffer& key);
 
   void
   removeTrustAnchor(const Name& keyName);
@@ -58,16 +55,12 @@ protected:
   void
   checkPolicy(const Data& data,
               int stepCount,
-              const ndn::OnDataValidated& onValidated,
-              const ndn::OnDataValidationFailed& onValidationFailed,
-              std::vector<shared_ptr<ndn::ValidationRequest> >& nextSteps);
+              const OnDataValidated& onValidated);
 
   void
   checkPolicy(const Interest& interest,
               int stepCount,
-              const ndn::OnInterestValidated& onValidated,
-              const ndn::OnInterestValidationFailed& onValidationFailed,
-              std::vector<shared_ptr<ndn::ValidationRequest> >& nextSteps);
+              const OnInterestValidated& onValidated);
 
 private:
   void
@@ -79,11 +72,8 @@ private:
                 const OnValidationFailed& onValidationFailed);
 
 private:
-  typedef std::map<Name, ndn::PublicKey> TrustAnchors;
+  typedef std::map<Name, ndn::Buffer> TrustAnchors;
 
-  ndn::SecRuleRelative m_invitationReplyRule;
-  ndn::Regex m_invitationInterestRule;
-  ndn::Regex m_innerKeyRegex;
   TrustAnchors m_trustAnchors;
 };
 

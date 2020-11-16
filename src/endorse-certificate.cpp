@@ -20,15 +20,8 @@ namespace chronochat {
 using std::vector;
 using std::string;
 
-using ndn::PublicKey;
-using ndn::IdentityCertificate;
-using ndn::CertificateSubjectDescription;
-using ndn::CertificateExtension;
-using ndn::OID;
+using ndn::security::v2::Certificate;
 using ndn::OBufferStream;
-
-const OID EndorseCertificate::PROFILE_EXT_OID("1.3.6.1.5.32.2.1");
-const OID EndorseCertificate::ENDORSE_EXT_OID("1.3.6.1.5.32.2.2");
 
 const vector<string> EndorseCertificate::DEFAULT_ENDORSE_LIST;
 
@@ -51,36 +44,24 @@ operator>>(EndorseExtension& endorseExtension, vector<string>& endorseList)
   return endorseExtension;
 }
 
-EndorseCertificate::EndorseCertificate(const IdentityCertificate& kskCertificate,
+EndorseCertificate::EndorseCertificate(const Certificate& kskCertificate,
                                        const Profile& profile,
                                        const vector<string>& endorseList)
   : Certificate()
   , m_profile(profile)
   , m_endorseList(endorseList)
 {
-  m_keyName = IdentityCertificate::certificateNameToPublicKeyName(kskCertificate.getName());
+  m_keyName = kskCertificate.getKeyName();
   m_signer = m_keyName;
 
   Name dataName = m_keyName;
   dataName.append("PROFILE-CERT").append(m_signer.wireEncode()).appendVersion();
   setName(dataName);
 
-  setNotBefore(kskCertificate.getNotBefore());
-  setNotAfter(kskCertificate.getNotAfter());
-  addSubjectDescription(CertificateSubjectDescription(OID("2.5.4.41"), m_keyName.toUri()));
-  setPublicKeyInfo(kskCertificate.getPublicKeyInfo());
-
-  Block profileWire = m_profile.wireEncode();
-  addExtension(CertificateExtension(PROFILE_EXT_OID, true, ndn::Buffer(profileWire.wire(),
-                                                                       profileWire.size())));
-
-  EndorseExtension endorseExtension;
-  endorseExtension << m_endorseList;
-  Block endorseWire = endorseExtension.wireEncode();
-  addExtension(CertificateExtension(ENDORSE_EXT_OID, true, ndn::Buffer(endorseWire.wire(),
-                                                                       endorseWire.size())));
-
-  encode();
+  auto period = kskCertificate.getValidityPeriod().getPeriod();
+  getValidityPeriod().setPeriod(period.first, period.second);
+  setContent(kskCertificate.getContent());
+  setMetaInfo(kskCertificate.getMetaInfo());
 }
 
 EndorseCertificate::EndorseCertificate(const EndorseCertificate& endorseCertificate,
@@ -96,26 +77,14 @@ EndorseCertificate::EndorseCertificate(const EndorseCertificate& endorseCertific
   dataName.append("PROFILE-CERT").append(m_signer.wireEncode()).appendVersion();
   setName(dataName);
 
-  setNotBefore(endorseCertificate.getNotBefore());
-  setNotAfter(endorseCertificate.getNotAfter());
-  addSubjectDescription(CertificateSubjectDescription(OID("2.5.4.41"), m_keyName.toUri()));
-  setPublicKeyInfo(endorseCertificate.getPublicKeyInfo());
-
-  Block profileWire = m_profile.wireEncode();
-  addExtension(CertificateExtension(PROFILE_EXT_OID, true, ndn::Buffer(profileWire.wire(),
-                                                                       profileWire.size())));
-
-  EndorseExtension endorseExtension;
-  endorseExtension << m_endorseList;
-  Block endorseWire = endorseExtension.wireEncode();
-  addExtension(CertificateExtension(ENDORSE_EXT_OID, true, ndn::Buffer(endorseWire.wire(),
-                                                                       endorseWire.size())));
-
-  encode();
+  auto period = endorseCertificate.getValidityPeriod().getPeriod();
+  getValidityPeriod().setPeriod(period.first, period.second);
+  setContent(endorseCertificate.getContent());
+  setMetaInfo(endorseCertificate.getMetaInfo());
 }
 
 EndorseCertificate::EndorseCertificate(const Name& keyName,
-                                       const PublicKey& key,
+                                       const ndn::Buffer& key,
                                        const time::system_clock::TimePoint& notBefore,
                                        const time::system_clock::TimePoint& notAfter,
                                        const Name& signer,
@@ -131,22 +100,7 @@ EndorseCertificate::EndorseCertificate(const Name& keyName,
   dataName.append("PROFILE-CERT").append(m_signer.wireEncode()).appendVersion();
   setName(dataName);
 
-  setNotBefore(notBefore);
-  setNotAfter(notAfter);
-  addSubjectDescription(CertificateSubjectDescription(OID("2.5.4.41"), m_keyName.toUri()));
-  setPublicKeyInfo(key);
-
-  Block profileWire = m_profile.wireEncode();
-  addExtension(CertificateExtension(PROFILE_EXT_OID, true, ndn::Buffer(profileWire.wire(),
-                                                                       profileWire.size())));
-
-  EndorseExtension endorseExtension;
-  endorseExtension << m_endorseList;
-  Block endorseWire = endorseExtension.wireEncode();
-  addExtension(CertificateExtension(ENDORSE_EXT_OID, true, ndn::Buffer(endorseWire.wire(),
-                                                                       endorseWire.size())));
-
-  encode();
+  getValidityPeriod().setPeriod(notBefore, notAfter);
 }
 
 EndorseCertificate::EndorseCertificate(const EndorseCertificate& endorseCertificate)
@@ -168,19 +122,6 @@ EndorseCertificate::EndorseCertificate(const Data& data)
 
   m_keyName = dataName.getPrefix(-3);
   m_signer.wireDecode(dataName.get(-2).blockFromValue());
-
-
-  for (const auto& entry : m_extensionList) {
-    if (PROFILE_EXT_OID == entry.getOid()) {
-      m_profile.wireDecode(Block(entry.getValue().buf(), entry.getValue().size()));
-    }
-    if (ENDORSE_EXT_OID == entry.getOid()) {
-      EndorseExtension endorseExtension;
-      endorseExtension.wireDecode(Block(entry.getValue().buf(), entry.getValue().size()));
-
-      endorseExtension >> m_endorseList;
-    }
-  }
 }
 
 } // namespace chronochat

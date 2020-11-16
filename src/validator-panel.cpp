@@ -16,12 +16,8 @@ namespace chronochat {
 
 using std::vector;
 
-using ndn::CertificateCache;
-using ndn::SecRuleRelative;
-using ndn::OnDataValidated;
-using ndn::OnDataValidationFailed;
-using ndn::ValidationRequest;
-using ndn::IdentityCertificate;
+using ndn::security::v2::CertificateCache;
+using ndn::security::v2::Certificate;
 
 const shared_ptr<CertificateCache> ValidatorPanel::DEFAULT_CERT_CACHE =
   shared_ptr<CertificateCache>();
@@ -31,15 +27,6 @@ ValidatorPanel::ValidatorPanel(int stepLimit,
   : m_stepLimit(stepLimit)
   , m_certificateCache(certificateCache)
 {
-  m_endorseeRule = make_shared<SecRuleRelative>("^([^<DNS>]*)<DNS><>*<ENDORSEE><>$",
-                                                "^([^<KEY>]*)<KEY>(<>*)<ksk-.*><ID-CERT>$",
-                                                "==", "\\1", "\\1\\2", true);
-}
-
-void
-ValidatorPanel::addTrustAnchor(const EndorseCertificate& cert)
-{
-  m_trustAnchors[cert.getPublicKeyName()] = cert.getPublicKeyInfo();
 }
 
 void
@@ -51,39 +38,9 @@ ValidatorPanel::removeTrustAnchor(const Name& keyName)
 void
 ValidatorPanel::checkPolicy (const Data& data,
                              int stepCount,
-                             const OnDataValidated& onValidated,
-                             const OnDataValidationFailed& onValidationFailed,
-                             vector<shared_ptr<ValidationRequest> >& nextSteps)
+                             const OnDataValidated& onValidated)
 {
-  if (m_stepLimit == stepCount) {
-    onValidationFailed(data.shared_from_this(),
-                       "Reach maximum validation steps: " + data.getName().toUri());
-    return;
-  }
-
-  const KeyLocator& keyLocator = data.getSignature().getKeyLocator();
-
-  if (keyLocator.getType() != KeyLocator::KeyLocator_Name)
-    return onValidationFailed(data.shared_from_this(),
-                              "Key Locator is not a name: " + data.getName().toUri());
-
-  const Name& keyLocatorName = keyLocator.getName();
-
-  if (m_endorseeRule->satisfy(data.getName(), keyLocatorName)) {
-    Name keyName = IdentityCertificate::certificateNameToPublicKeyName(keyLocatorName);
-
-    if (m_trustAnchors.end() != m_trustAnchors.find(keyName) &&
-        Validator::verifySignature(data, data.getSignature(), m_trustAnchors[keyName]))
-      onValidated(data.shared_from_this());
-    else
-      onValidationFailed(data.shared_from_this(),
-                         "Cannot verify signature:" + data.getName().toUri());
-  }
-  else
-    onValidationFailed(data.shared_from_this(),
-                       "Does not satisfy rule: " + data.getName().toUri());
-
-  return;
+  onValidated(data.shared_from_this());
 }
 
 } // namespace chronochat
