@@ -476,7 +476,7 @@ ControllerBackend::onSendInvitationRequest(const QString& chatroomName, const QS
   interestName.appendTimestamp();
   Interest interest(interestName);
   interest.setInterestLifetime(time::milliseconds(10000));
-  interest.setMustBeFresh(true);
+  interest.setMustBeFresh(false);
   interest.getNonce();
   m_face.expressInterest(interest,
                          bind(&ControllerBackend::onRequestResponse, this, _1, _2),
