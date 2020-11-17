@@ -415,8 +415,8 @@ Controller::createTrayIcon()
 void
 Controller::updateMenu()
 {
-  QMenu* menu = new QMenu(this);
-  QMenu* closeMenu = 0;
+  m_trayIconMenu->clear();
+  QMenu* menu = m_trayIconMenu;
 
   menu->addAction(m_startChatroom);
   menu->addAction(m_chatroomDiscoveryAction);
@@ -440,23 +440,18 @@ Controller::updateMenu()
   menu->addAction(m_updateLocalPrefixAction);
   menu->addSeparator();
   menu->addAction(m_minimizeAction);
-  closeMenu = menu->addMenu("Close chatroom");
+  m_closeMenu = menu->addMenu("Close chatroom");
   {
     ChatActionList::const_iterator it = m_closeActionList.begin();
     ChatActionList::const_iterator end = m_closeActionList.end();
     if (it == end)
-      closeMenu->setEnabled(false);
+      m_closeMenu->setEnabled(false);
     else
       for (; it != end; it++)
-        closeMenu->addAction(it->second);
+        m_closeMenu->addAction(it->second);
   }
   menu->addSeparator();
   menu->addAction(m_quitAction);
-
-  m_trayIcon->setContextMenu(menu);
-  delete m_trayIconMenu;
-  m_trayIconMenu = menu;
-  m_closeMenu = closeMenu;
 }
 
 string
