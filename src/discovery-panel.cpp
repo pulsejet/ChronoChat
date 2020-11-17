@@ -21,7 +21,6 @@
 
 namespace chronochat {
 
-static const time::seconds REFRESH_INTERVAL(60);
 static const ndn::Name::Component ROUTING_HINT_SEPARATOR =
   ndn::name::Component::fromEscapedString("%F0%2E");
 

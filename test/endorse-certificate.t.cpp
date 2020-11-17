@@ -21,6 +21,7 @@
 #include <ndn-cxx/util/time.hpp>
 #include <ndn-cxx/util/io.hpp>
 #include "cryptopp.hpp"
+#include "endorse-certificate.hpp"
 
 namespace chronochat {
 namespace tests {
@@ -29,39 +30,36 @@ using std::vector;
 using std::string;
 
 using ndn::KeyChain;
-using ndn::IdentityCertificate;
+using ndn::security::v2::Certificate;
 
 BOOST_AUTO_TEST_SUITE(TestEndorseCertificate)
 
 const string testIdCert("\
-Bv0DXwdRCBdFbmRvcnNlQ2VydGlmaWNhdGVUZXN0cwgDS0VZCAxFbmNvZGVEZWNv\
-ZGUIEWtzay0xMzk0MDcyMTQ3MzM1CAdJRC1DRVJUCAf9AUSVLNXoFAMYAQIV/QG8\
-MIIBuDAiGA8yMDE0MDMwNjAyMTU0N1oYDzIwMTQwMzEzMDkyNzQ3WjBuMA0GA1UE\
-KRMGTXlOYW1lMBIGA1UECxMLTXlJbnN0aXR1dGUwDgYDVQQBEwdNeUdyb3VwMBEG\
-A1UEAxMKTXlIb21lUGFnZTAQBgNVBFATCU15QWR2aXNvcjAUBgkqhkiG9w0BCQET\
-B015RW1haWwwggEgMA0GCSqGSIb3DQEBAQUAA4IBDQAwggEIAoIBAQDYsWD0ixQF\
-RfYs36BHNsRNv5ouEL69oaS6XX/hsQN1By4RNI6eSG5DpajtAwK1y+DXPwkLHd5S\
-BrvwLzReF7SsrF2ObawznU14GKaQdbn+eVIER7CWvSpJhH5yKS4fCPRN+b1MP8QS\
-DLvaaGu15T98cgVscIEqFkLfnWSQbdN6EnodjOH27JkBCz8Lxv9GZLrhfKGzOylR\
-fLzvCIyIXYl6HWroO+xTJQaP+miSZNVGyf4jYqz5WbQH56a9ZjUldTphjuDbBjUq\
-QaNVOzoKT+H4qh8mn399aQ9/BjM+6/WgrSw7/MO2UCgoZhySQY4HVqzUVVWnYwOU\
-NYPoOS3HdvGLAgERFkEbAQEcPAc6CBdFbmRvcnNlQ2VydGlmaWNhdGVUZXN0cwgD\
-S0VZCBFrc2stMTM5NDA3MjE0NzEyOAgHSUQtQ0VSVBf9AQARSwS/CelRRSUO4Tik\
-5Q+L5zusaqq5652T92/83S5l38dO41BOf5fBUb3RtnFSbS/QaBCRfRJtDvkN2LhE\
-vksJjSAoAKUzx27UyM1eq7L8DDvsvC9mbwxGzTK2F1t3Jy81rk5X34MecvztlILs\
-nLqzqqiwl3dS1xyvg9GZez5g1yoOtRwzkHaah6svLVwzwM7kECXWRf4NoHTazWQo\
-Cs6s60F9I/xBRKJ4Cw2L/AzvB5sX1J4HvHCsplbR/GdvA8uW6i8pp7kjIhjCGewK\
-uNfH/4lHxzTl3pjsVy+EHKmwSlZ+T8cy5qaIEHxhbOzMNNVdit7XEwexOE66AVza\
-92On");
+Bv0Czwc5CBdFbmRvcnNlQ2VydGlmaWNhdGVUZXN0cwgDS0VZCAg2x+MG7IxCPQgE\
+c2VsZggJ/QAAAXXVNWGzFAkYAQIZBAA27oAV/QEmMIIBIjANBgkqhkiG9w0BAQEF\
+AAOCAQ8AMIIBCgKCAQEAv3BM/bpWTmcKTeOzykiFm/GWYnhJgTQxQlRp4mQHsEmH\
+SFmrCtx2g0mwoPUPwjBhXuH0J4PSIuudb8VLiPGD03/gFUeGtY9VRrH5dZuIOpHT\
+tklBz8rA3DsCf0rMggU6IrYd6Vjlk+hseoAlKvVVgmGT+NXdmtO+Xhxt16S2jPUs\
++ZxKc+gBGKEHKKZkEDlRWzWrj+hBKasOic3v7Lc22M4tvjANxyMApZ/rXKdIi1rN\
+Da0u4dk6lL/qW5fIEQEjsf4dngZkHaHkpK6wEnXyTQIX71/cmMB42xggfZ7YAvfO\
+smuc0mg3fuuwTMo5fKxHCES14i6y7TMhqlxkgdb66QIDAQABFlkbAQEcKgcoCBdF\
+bmRvcnNlQ2VydGlmaWNhdGVUZXN0cwgDS0VZCAg2x+MG7IxCPf0A/Sb9AP4PMTk3\
+MDAxMDFUMDAwMDAw/QD/DzIwNDAxMTEyVDA3NTcyNhf9AQA0C8yYGgrruSJe1n5q\
+oTSdmomnRdZgdczblgL5jY9dP9OAUJL6vy5bHwnjFU484T6vKANETL/BZfnkI/h9\
+39gMjXiqaQ4zStuSNBVO/41IyOzDbg2KyQk41mB1M1r7pvzIziNM//ammYBzaQN/\
+ixlKPrReUIypEswYnCXaw4VZPLkReR8yjVqLW2B6X8a1zfDWMOyv39Gayhpfcvbo\
+2juJZ75JTk6KL8lEO8KO84M2ym/VABDZUHbXnMPYmqU4aMRRLfytzeZlLOdRzLpb\
+FrE4AHwudakhruPB39NluYu2IHhyIB0x1u4xxyzGfgoIRIPXnW4zoulFn9RFgg9A\
+6lNM\
+");
 
-const string testKey("\
-MIIBIDANBgkqhkiG9w0BAQEFAAOCAQ0AMIIBCAKCAQEA2LFg9IsUBUX2LN+gRzbE\
-Tb+aLhC+vaGkul1/4bEDdQcuETSOnkhuQ6Wo7QMCtcvg1z8JCx3eUga78C80Xhe0\
-rKxdjm2sM51NeBimkHW5/nlSBEewlr0qSYR+cikuHwj0Tfm9TD/EEgy72mhrteU/\
-fHIFbHCBKhZC351kkG3TehJ6HYzh9uyZAQs/C8b/RmS64XyhszspUXy87wiMiF2J\
-eh1q6DvsUyUGj/pokmTVRsn+I2Ks+Vm0B+emvWY1JXU6YY7g2wY1KkGjVTs6Ck/h\
-+KofJp9/fWkPfwYzPuv1oK0sO/zDtlAoKGYckkGOB1as1FVVp2MDlDWD6Dktx3bx\
-iwIBEQ==");
+const string testKey("MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAv3BM/bpWTmcKTeOzykiF\
+m/GWYnhJgTQxQlRp4mQHsEmHSFmrCtx2g0mwoPUPwjBhXuH0J4PSIuudb8VLiPGD\
+03/gFUeGtY9VRrH5dZuIOpHTtklBz8rA3DsCf0rMggU6IrYd6Vjlk+hseoAlKvVV\
+gmGT+NXdmtO+Xhxt16S2jPUs+ZxKc+gBGKEHKKZkEDlRWzWrj+hBKasOic3v7Lc2\
+2M4tvjANxyMApZ/rXKdIi1rNDa0u4dk6lL/qW5fIEQEjsf4dngZkHaHkpK6wEnXy\
+TQIX71/cmMB42xggfZ7YAvfOsmuc0mg3fuuwTMo5fKxHCES14i6y7TMhqlxkgdb6\
+6QIDAQAB");
 
 const string testEndorseCert("\
 Bv0CYweICBdFbmRvcnNlQ2VydGlmaWNhdGVUZXN0cwgMRW5jb2RlRGVjb2RlCBFr\
@@ -82,69 +80,19 @@ BOOST_AUTO_TEST_CASE(IdCert)
 {
   boost::iostreams::stream<boost::iostreams::array_source> is(testIdCert.c_str(),
                                                               testIdCert.size());
-  shared_ptr<IdentityCertificate> idCert = ndn::io::load<IdentityCertificate>(is);
+  std::shared_ptr<Certificate> idCert = ndn::io::load<Certificate>(is);
 
   BOOST_CHECK(static_cast<bool>(idCert));
 
-  const ndn::Certificate::SubjectDescriptionList& subjectDescription =
-    idCert->getSubjectDescriptionList();
-  BOOST_CHECK_EQUAL(subjectDescription.size(), 6);
-
-  ndn::Certificate::SubjectDescriptionList::const_iterator it  = subjectDescription.begin();
-  ndn::Certificate::SubjectDescriptionList::const_iterator end = subjectDescription.end();
-  int count = 0;
-  for(; it != end; it++)
-    {
-      if(it->getOidString() == "2.5.4.41")
-        {
-          BOOST_CHECK_EQUAL(it->getValue(), "MyName");
-          count++;
-        }
-      if(it->getOidString() == "2.5.4.11")
-        {
-          BOOST_CHECK_EQUAL(it->getValue(), "MyInstitute");
-          count++;
-        }
-      if(it->getOidString() == "2.5.4.1")
-        {
-          BOOST_CHECK_EQUAL(it->getValue(), "MyGroup");
-          count++;
-        }
-      if(it->getOidString() == "2.5.4.3")
-        {
-          BOOST_CHECK_EQUAL(it->getValue(), "MyHomePage");
-          count++;
-        }
-      if(it->getOidString() == "2.5.4.80")
-        {
-          BOOST_CHECK_EQUAL(it->getValue(), "MyAdvisor");
-          count++;
-        }
-      if(it->getOidString() == "1.2.840.113549.1.9.1")
-        {
-          BOOST_CHECK_EQUAL(it->getValue(), "MyEmail");
-          count++;
-        }
-    }
-  BOOST_CHECK_EQUAL(count, 6);
-
   BOOST_CHECK_EQUAL(idCert->getName().toUri(),
-    "/EndorseCertificateTests/KEY/EncodeDecode/ksk-1394072147335/ID-CERT/%FD%01D%95%2C%D5%E8");
-
-  ndn::OBufferStream keyOs;
-  {
-    using namespace CryptoPP;
-    StringSource(testKey, true, new Base64Decoder(new FileSink(keyOs)));
-  }
-  ndn::PublicKey key(keyOs.buf()->buf(), keyOs.buf()->size());
-  BOOST_CHECK(key == idCert->getPublicKeyInfo());
+    "/EndorseCertificateTests/KEY/6%C7%E3%06%EC%8CB%3D/self/%FD%00%00%01u%D55a%B3");
 }
 
 BOOST_AUTO_TEST_CASE(ConstructFromIdCert)
 {
   boost::iostreams::stream<boost::iostreams::array_source> is(testIdCert.c_str(),
                                                               testIdCert.size());
-  shared_ptr<IdentityCertificate> idCert = ndn::io::load<IdentityCertificate>(is);
+  std::shared_ptr<Certificate> idCert = ndn::io::load<Certificate>(is);
 
   Profile profile(*idCert);
   vector<string> endorseList;
@@ -157,7 +105,8 @@ BOOST_AUTO_TEST_CASE(ConstructFromIdCert)
   KeyChain keyChain(std::string("sqlite3:").append(keyChainTmpPath.string()),
                     std::string("tpm-file:").append(keyChainTmpPath.string()));
 
-  keyChain.signWithSha256(endorseCertificate);
+  auto signOpts = ndn::security::SigningInfo(ndn::security::SigningInfo::SignerType::SIGNER_TYPE_SHA256);
+  keyChain.sign(endorseCertificate, signOpts);
   const Block& endorseDataBlock = endorseCertificate.wireEncode();
 
   Data decodedEndorseData;
@@ -195,7 +144,8 @@ BOOST_AUTO_TEST_CASE(ConstructFromEndorseCert)
   KeyChain keyChain(std::string("sqlite3:").append(keyChainTmpPath.string()),
                     std::string("tpm-file:").append(keyChainTmpPath.string()));
 
-  keyChain.signWithSha256(endorseCertificate);
+  auto signOpts = ndn::security::SigningInfo(ndn::security::SigningInfo::SignerType::SIGNER_TYPE_SHA256);
+  keyChain.sign(endorseCertificate, signOpts);
 
   const Block& endorseDataBlock = endorseCertificate.wireEncode();
 
