@@ -47,7 +47,7 @@ protected:
   }
 
 private:
-  int m_stepLimit;
+  // int m_stepLimit;
   shared_ptr<ndn::security::v2::CertificateCache> m_certificateCache;
   std::map<Name, ndn::Buffer> m_trustAnchors;
 };

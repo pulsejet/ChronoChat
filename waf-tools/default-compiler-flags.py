@@ -8,9 +8,7 @@ def options(opt):
 
 def configure(conf):
     areCustomCxxflagsPresent = (len(conf.env.CXXFLAGS) > 0)
-    defaultFlags = ['-std=c++0x', '-std=c++11',
-                    '-stdlib=libc++',   # clang on OSX < 10.9 by default uses gcc's
-                                        # libstdc++, which is not C++11 compatible
+    defaultFlags = ['-std=c++14',
                     '-Wall', '-Wno-nested-anon-types']
 
     if conf.options.debug:

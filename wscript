@@ -10,7 +10,7 @@ def options(opt):
     opt.load(['compiler_c', 'compiler_cxx', 'qt5', 'gnu_dirs'])
 
     opt.load(['default-compiler-flags', 'boost', 'protoc',
-              'doxygen', 'sphinx_build', 'qt5'],
+              'doxygen', 'sphinx_build', 'qt5', 'cryptopp'],
               tooldir=['waf-tools'])
 
     opt = opt.add_option_group('ChronotChat Options')
@@ -24,7 +24,7 @@ def options(opt):
 def configure(conf):
     conf.load(['compiler_c', 'compiler_cxx', 'qt5',
                'default-compiler-flags', 'boost', 'protoc', 'gnu_dirs',
-               'doxygen', 'sphinx_build'])
+               'doxygen', 'sphinx_build', 'cryptopp'])
 
     conf.check_cfg(package='libndn-cxx', args=['--cflags', '--libs'],
                    uselib_store='NDN_CXX', mandatory=True)
@@ -50,6 +50,7 @@ def configure(conf):
                    " (http://redmine.named-data.net/projects/nfd/wiki/Boost_FAQ)")
         return
 
+    conf.check_cryptopp()
     conf.write_config_header('src/config.h')
 
 def build (bld):
@@ -64,10 +65,8 @@ def build (bld):
         features = feature_list,
         defines = "WAF=1",
         source = bld.path.ant_glob(['src/*.cpp', 'src/*.ui', '*.qrc', 'logging.cc', 'src/*.proto']),
-        cxxflags  = ['-std=c++14', '-Wfatal-errors'],
-        ldflags = ['-lcrypto++'],
         includes = "src .",
-        use = "QT5CORE QT5GUI QT5WIDGETS QT5SQL NDN_CXX BOOST LOG4CXX SYNC",
+        use = "QT5CORE QT5GUI QT5WIDGETS QT5SQL NDN_CXX BOOST LOG4CXX SYNC CRYPTOPP",
         )
 
     # Unit tests
@@ -83,7 +82,7 @@ def build (bld):
           )
 
     # Debug tools
-    if bld.env["_DEBUG"]:
+    if bld.env["_DEBUG"] and False:
         for app in bld.path.ant_glob('debug-tools/*.cc'):
             bld(features=['cxx', 'cxxprogram'],
                 target = '%s' % (str(app.change_ext('','.cc'))),

@@ -24,8 +24,8 @@ const shared_ptr<CertificateCache> ValidatorPanel::DEFAULT_CERT_CACHE =
 
 ValidatorPanel::ValidatorPanel(int stepLimit,
                                const shared_ptr<CertificateCache> certificateCache)
-  : m_stepLimit(stepLimit)
-  , m_certificateCache(certificateCache)
+  // : m_stepLimit(stepLimit)
+  : m_certificateCache(certificateCache)
 {
 }
 
