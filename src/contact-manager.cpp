@@ -24,6 +24,8 @@
 #include <ndn-cxx/security/validator-null.hpp>
 #include <ndn-cxx/security/signing-helpers.hpp>
 #include <ndn-cxx/security/verification-helpers.hpp>
+#include <ndn-cxx/security/certificate-fetcher-direct-fetch.hpp>
+#include <ndn-cxx/security/validation-policy-accept-all.hpp>
 #include "cryptopp.hpp"
 #include <boost/asio.hpp>
 #include <boost/tokenizer.hpp>
@@ -101,8 +103,13 @@ ContactManager::initializeSecurity()
 {
   shared_ptr<Certificate> anchor = loadTrustAnchor();
 
-  auto validator = make_shared<ndn::security::v2::ValidatorNull>();
-  m_validator = validator;
+  // TODO: use custom policy here
+  unique_ptr<ndn::security::v2::ValidationPolicy> policy
+    = std::make_unique<ndn::security::v2::ValidationPolicyAcceptAll>();
+
+  unique_ptr<ndn::security::v2::CertificateFetcher> certificateFetcher
+    = std::make_unique<ndn::security::v2::CertificateFetcherDirectFetch>(m_face);
+  m_validator = make_shared<ndn::security::v2::Validator>(move(policy), move(certificateFetcher));
 }
 
 void
