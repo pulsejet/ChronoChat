@@ -8,17 +8,20 @@
  * Author: Yingdi Yu <yingdi@cs.ucla.edu>
  */
 
-#ifndef CHRONOCHAT_VALIDATOR_INVITATION_HPP
-#define CHRONOCHAT_VALIDATOR_INVITATION_HPP
+#ifndef CHRONOCHAT_VALIDATION_POLICY_INVITATION_HPP
+#define CHRONOCHAT_VALIDATION_POLICY_INVITATION_HPP
 
 #include "common.hpp"
 
-#include <ndn-cxx/security/validator.hpp>
+#include <ndn-cxx/security/validation-policy.hpp>
 #include <ndn-cxx/security/certificate-cache.hpp>
+
+using ndn::security::v2::ValidationState;
+using ndn::security::v2::ValidationPolicy;
 
 namespace chronochat {
 
-class ValidatorInvitation
+class ValidationPolicyInvitation : public ValidationPolicy
 {
   typedef function<void(const std::string&)> OnValidationFailed;
   typedef function<void()> OnValidated;
@@ -35,32 +38,14 @@ public:
 
   static const shared_ptr<ndn::security::v2::CertificateCache> DefaultCertificateCache;
 
-  ValidatorInvitation();
-
-  virtual
-  ~ValidatorInvitation()
-  {
-  }
-
-  void
-  addTrustAnchor(const Name& keyName, const ndn::Buffer& key);
-
-  void
-  removeTrustAnchor(const Name& keyName);
-
-  void
-  cleanTrustAnchor();
-
 protected:
   void
-  checkPolicy(const Data& data,
-              int stepCount,
-              const OnDataValidated& onValidated);
+  checkPolicy(const Data& data, const shared_ptr<ValidationState>& state,
+              const ValidationPolicy::ValidationContinuation& continueValidation);
 
   void
-  checkPolicy(const Interest& interest,
-              int stepCount,
-              const OnInterestValidated& onValidated);
+  checkPolicy(const Interest& interest, const shared_ptr<ValidationState>& state,
+              const ValidationPolicy::ValidationContinuation& continueValidation);
 
 private:
   void
@@ -70,13 +55,8 @@ private:
                 const Data& innerData,
                 const OnValidated& onValidated,
                 const OnValidationFailed& onValidationFailed);
-
-private:
-  typedef std::map<Name, ndn::Buffer> TrustAnchors;
-
-  TrustAnchors m_trustAnchors;
 };
 
 } // namespace chronochat
 
-#endif // CHRONOCHAT_VALIDATOR_INVITATION_HPP
+#endif // CHRONOCHAT_VALIDATION_POLICY_INVITATION_HPP

@@ -20,7 +20,7 @@
 #include "common.hpp"
 #include "contact-manager.hpp"
 #include "invitation.hpp"
-#include "validator-invitation.hpp"
+#include "validation-policy-invitation.hpp"
 #include <ndn-cxx/security/key-chain.hpp>
 #include <ndn-cxx/ims/in-memory-storage-persistent.hpp>
 #include <ndn-cxx/security/validator-null.hpp>
@@ -75,11 +75,11 @@ private:
   onInvitationRegisterFailed(const Name& prefix, const std::string& failInfo);
 
   void
-  onInvitationValidated(const shared_ptr<const Interest>& interest);
+  onInvitationValidated(const Interest& interest);
 
   void
-  onInvitationValidationFailed(const shared_ptr<const Interest>& interest,
-                               std::string failureInfo);
+  onInvitationValidationFailed(const Interest& interest,
+                               const ndn::security::v2::ValidationError& failureInfo);
 
   void
   onLocalPrefix(const ndn::ConstBufferPtr& data);
@@ -167,7 +167,7 @@ private:
 
   // Security related;
   ndn::KeyChain m_keyChain;
-  ValidatorInvitation m_validator;
+  shared_ptr<ndn::security::v2::Validator> m_validator;
   ndn::security::v2::ValidatorNull m_nullValidator;
 
   // RegisteredPrefixId

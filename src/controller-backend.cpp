@@ -14,6 +14,7 @@
 #ifndef Q_MOC_RUN
 #include <ndn-cxx/util/segment-fetcher.hpp>
 #include <ndn-cxx/security/signing-helpers.hpp>
+#include <ndn-cxx/security/certificate-fetcher-offline.hpp>
 #include "invitation.hpp"
 #include <iostream>
 #endif
@@ -43,6 +44,11 @@ ControllerBackend::ControllerBackend(QObject* parent)
   connect(&m_contactManager, SIGNAL(contactIdListReady(const QStringList&)),
           this, SLOT(onContactIdListReady(const QStringList&)));
 
+  unique_ptr<ndn::security::v2::ValidationPolicy> policy
+    = std::make_unique<ValidationPolicyInvitation>();
+  unique_ptr<ndn::security::v2::CertificateFetcher> certificateFetcher
+    = std::make_unique<ndn::security::v2::CertificateFetcherOffline>();
+  m_validator = make_shared<ndn::security::v2::Validator>(move(policy), move(certificateFetcher));
 }
 
 ControllerBackend::~ControllerBackend()
@@ -206,9 +212,10 @@ ControllerBackend::onInvitationInterest(const ndn::Name& prefix,
     return;
   }
 
-  OnInterestValidated onValidated = bind(&ControllerBackend::onInvitationValidated, this, _1);
-  onValidated(invitationInterest);
-  //m_validator.validate(*invitationInterest, onValidated);
+  m_validator->validate(
+    *invitationInterest,
+    bind(&ControllerBackend::onInvitationValidated, this, _1),
+    bind(&ControllerBackend::onInvitationValidationFailed, this, _1, _2));
 }
 
 void
@@ -242,20 +249,20 @@ ControllerBackend::onInvitationRequestInterest(const ndn::Name& prefix,
 }
 
 void
-ControllerBackend::onInvitationValidated(const shared_ptr<const Interest>& interest)
+ControllerBackend::onInvitationValidated(const Interest& interest)
 {
-  Invitation invitation(interest->getName());
+  Invitation invitation(interest.getName());
   // Should be obtained via a method of ContactManager.
   string alias = invitation.getInviterCertificate().getKeyName().getPrefix(-1).toUri();
 
   emit invitationValidated(QString::fromStdString(alias),
                            QString::fromStdString(invitation.getChatroom()),
-                           interest->getName());
+                           interest.getName());
 }
 
 void
-ControllerBackend::onInvitationValidationFailed(const shared_ptr<const Interest>& interest,
-                                                string failureInfo)
+ControllerBackend::onInvitationValidationFailed(const Interest& interest,
+                                                const ndn::security::v2::ValidationError& failureInfo)
 {
   // _LOG_DEBUG("Invitation: " << interest->getName() <<
   //            " cannot not be validated due to: " << failureInfo);
@@ -497,10 +504,10 @@ ControllerBackend::onContactIdListReady(const QStringList& list)
   ContactList contactList;
 
   m_contactManager.getContactList(contactList);
-  m_validator.cleanTrustAnchor();
+  // m_validator.cleanTrustAnchor();
 
-  for (ContactList::const_iterator it  = contactList.begin(); it != contactList.end(); it++)
-    m_validator.addTrustAnchor((*it)->getPublicKeyName(), (*it)->getPublicKey());
+  // for (ContactList::const_iterator it  = contactList.begin(); it != contactList.end(); it++)
+    // m_validator.addTrustAnchor((*it)->getPublicKeyName(), (*it)->getPublicKey());
 
 }
 
