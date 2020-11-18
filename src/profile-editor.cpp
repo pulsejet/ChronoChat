@@ -56,10 +56,14 @@ ProfileEditor::onCloseDBModule()
 void
 ProfileEditor::onIdentityUpdated(const QString& identity)
 {
-  m_tableModel = new QSqlTableModel();
-
   m_identity = identity;
   ui->identityInput->setText(identity);
+}
+
+void
+ProfileEditor::resetPanel()
+{
+  m_tableModel = new QSqlTableModel();
 
   m_tableModel->setEditStrategy(QSqlTableModel::OnManualSubmit);
   m_tableModel->setTable("SelfProfile");

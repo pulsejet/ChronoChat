@@ -605,6 +605,7 @@ Controller::onSettingsAction()
 void
 Controller::onProfileEditorAction()
 {
+  m_profileEditor->resetPanel();
   m_profileEditor->show();
   m_profileEditor->raise();
 }
@@ -620,6 +621,7 @@ Controller::onAddContactAction()
 void
 Controller::onContactListAction()
 {
+  m_contactPanel->resetPanel();
   m_contactPanel->show();
   m_contactPanel->raise();
 }

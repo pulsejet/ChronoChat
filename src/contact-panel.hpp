@@ -39,9 +39,10 @@ public:
   virtual
   ~ContactPanel();
 
-private:
   void
   resetPanel();
+
+private:
 
 signals:
   void
