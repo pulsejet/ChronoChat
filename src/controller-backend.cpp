@@ -415,6 +415,11 @@ ControllerBackend::onInvitationResponded(const ndn::Name& invitationName, bool a
 
     response->setName(responseName);
 
+    // We should create a particular certificate for this chatroom,
+    //but let's use default one for now.
+    chatroomCert = make_shared<ndn::security::v2::Certificate>(
+      m_keyChain.createIdentity(m_identity).getDefaultKey().getDefaultCertificate());
+
     response->setContent(chatroomCert->wireEncode());
     response->setFreshnessPeriod(time::milliseconds(1000));
   }
