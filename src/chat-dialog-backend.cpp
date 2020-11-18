@@ -16,8 +16,6 @@
 #ifndef Q_MOC_RUN
 #include <boost/iostreams/stream.hpp>
 #include <ndn-cxx/util/io.hpp>
-#include <ndn-cxx/security/certificate-fetcher-direct-fetch.hpp>
-#include <ndn-cxx/security/validation-policy-accept-all.hpp>
 #include "cryptopp.hpp"
 #include <iostream>
 #endif
@@ -118,15 +116,8 @@ ChatDialogBackend::initializeSync()
   m_scheduler = unique_ptr<ndn::Scheduler>(new ndn::Scheduler(m_face->getIoService()));
 
   // initialize validator
-  shared_ptr<ndn::security::v2::Certificate> anchor = loadTrustAnchor();
-
-    // TODO: use custom policy here
-  unique_ptr<ndn::security::v2::ValidationPolicy> policy
-    = std::make_unique<ndn::security::v2::ValidationPolicyAcceptAll>();
-
-  unique_ptr<ndn::security::v2::CertificateFetcher> certificateFetcher
-    = std::make_unique<ndn::security::v2::CertificateFetcherDirectFetch>(*m_face);
-  m_validator = make_shared<ndn::security::v2::Validator>(move(policy), move(certificateFetcher));
+  m_validator = make_shared<ndn::security::ValidatorConfig>(*m_face);
+  m_validator->load("security/validation-chat.conf");
 
   // create a new SyncSocket
   m_sock = make_shared<chronosync::Socket>(m_chatroomPrefix,
