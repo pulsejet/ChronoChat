@@ -29,6 +29,7 @@ INIT_LOGGER("chronochat.Controller");
 
 Q_DECLARE_METATYPE(ndn::Name)
 Q_DECLARE_METATYPE(ndn::security::v2::Certificate)
+Q_DECLARE_METATYPE(chronochat::EndorseInfo)
 Q_DECLARE_METATYPE(ndn::Interest)
 Q_DECLARE_METATYPE(size_t)
 Q_DECLARE_METATYPE(chronochat::ChatroomInfo)
@@ -57,6 +58,7 @@ Controller::Controller(QWidget* parent)
 {
   qRegisterMetaType<ndn::Name>("ndn.Name");
   qRegisterMetaType<ndn::security::v2::Certificate>("ndn.security.v2.Certificate");
+  qRegisterMetaType<chronochat::EndorseInfo>("chronochat.EndorseInfo");
   qRegisterMetaType<ndn::Interest>("ndn.Interest");
   qRegisterMetaType<size_t>("size_t");
   qRegisterMetaType<chronochat::ChatroomInfo>("chronochat.Chatroom");
