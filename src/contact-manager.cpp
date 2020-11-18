@@ -224,16 +224,16 @@ ContactManager::onDnsSelfEndorseCertValidated(const Data& data,
       fetchCollectEndorse(identity);
     }
     else
-      emit contactInfoFetchFailed(QString::fromStdString(identity.toUri()));
+      emit contactInfoFetchFailed(QString::fromStdString(identity.toUri() + ": verification failed"));
   }
   catch(Block::Error& e) {
-    emit contactInfoFetchFailed(QString::fromStdString(identity.toUri()));
+    emit contactInfoFetchFailed(QString::fromStdString(identity.toUri() + ": block error " + e.what()));
   }
   catch(EndorseCertificate::Error& e) {
-    emit contactInfoFetchFailed(QString::fromStdString(identity.toUri()));
+    emit contactInfoFetchFailed(QString::fromStdString(identity.toUri() + ": cert error " + e.what()));
   }
   catch(Data::Error& e) {
-    emit contactInfoFetchFailed(QString::fromStdString(identity.toUri()));
+    emit contactInfoFetchFailed(QString::fromStdString(identity.toUri() + ": data error " + e.what()));
   }
 }
 

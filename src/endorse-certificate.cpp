@@ -53,11 +53,15 @@ EndorseCertificate::EndorseCertificate(const Certificate& kskCertificate,
   , m_profile(profile)
   , m_endorseList(endorseList)
 {
-  m_keyName = kskCertificate.getKeyName();
+  m_keyName = kskCertificate.getName().getSubName(-1);
   m_signer = m_keyName;
 
   Name dataName = m_keyName;
-  dataName.append("PROFILE-CERT").append(m_signer.wireEncode()).appendVersion();
+  dataName.append("PROFILE-CERT")
+          .append("KEY")
+          .append(m_keyName)
+          .append("SELF")
+          .appendVersion();
   setName(dataName);
 
   setMetaInfo(kskCertificate.getMetaInfo());
@@ -93,7 +97,11 @@ EndorseCertificate::EndorseCertificate(const EndorseCertificate& endorseCertific
   , m_endorseList(endorseList)
 {
   Name dataName = m_keyName;
-  dataName.append("PROFILE-CERT").append(m_signer.wireEncode()).appendVersion();
+  dataName.append("PROFILE-CERT")
+        .append("KEY")
+        .append(m_keyName)
+        .append(m_signer)
+        .append(m_signer.wireEncode()).appendVersion();
   setName(dataName);
 
   setMetaInfo(endorseCertificate.getMetaInfo());
@@ -133,7 +141,11 @@ EndorseCertificate::EndorseCertificate(const Name& keyName,
   , m_endorseList(endorseList)
 {
   Name dataName = m_keyName;
-  dataName.append("PROFILE-CERT").append(m_signer.wireEncode()).appendVersion();
+  dataName.append("PROFILE-CERT")
+      .append("KEY")
+      .append(m_keyName)
+      .append(m_signer)
+      .append(m_signer.wireEncode()).appendVersion();
   setName(dataName);
 
   ndn::security::v2::AdditionalDescription description;
