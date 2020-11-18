@@ -122,9 +122,9 @@ ContactManager::fetchCollectEndorse(const Name& identity)
   interest.setInterestLifetime(time::milliseconds(1000));
   interest.setMustBeFresh(true);
 
-  OnDataValidated onValidated =
+  ndn::security::v2::DataValidationSuccessCallback onValidated =
     bind(&ContactManager::onDnsCollectEndorseValidated, this, _1, identity);
-  OnDataValidationFailed onValidationFailed =
+  ndn::security::v2::DataValidationFailureCallback onValidationFailed =
     bind(&ContactManager::onDnsCollectEndorseValidationFailed, this, _1, _2, identity);
   TimeoutNotify timeoutNotify =
     bind(&ContactManager::onDnsCollectEndorseTimeoutNotify, this, _1, identity);
@@ -210,12 +210,12 @@ ContactManager::prepareEndorseInfo(const Name& identity)
 }
 
 void
-ContactManager::onDnsSelfEndorseCertValidated(const shared_ptr<const Data>& data,
+ContactManager::onDnsSelfEndorseCertValidated(const Data& data,
                                               const Name& identity)
 {
   try {
     Data plainData;
-    plainData.wireDecode(data->getContent().blockFromValue());
+    plainData.wireDecode(data.getContent().blockFromValue());
     shared_ptr<EndorseCertificate> selfEndorseCertificate =
       make_shared<EndorseCertificate>(boost::cref(plainData));
     auto pkey = selfEndorseCertificate->getPublicKey();
@@ -238,8 +238,8 @@ ContactManager::onDnsSelfEndorseCertValidated(const shared_ptr<const Data>& data
 }
 
 void
-ContactManager::onDnsSelfEndorseCertValidationFailed(const shared_ptr<const Data>& data,
-                                                     const string& failInfo,
+ContactManager::onDnsSelfEndorseCertValidationFailed(const Data& data,
+                                                     const ndn::security::v2::ValidationError& error,
                                                      const Name& identity)
 {
   // If we cannot validate the Self-Endorse-Certificate, we may retry or fetch id-cert,
@@ -257,12 +257,12 @@ ContactManager::onDnsSelfEndorseCertTimeoutNotify(const Interest& interest,
 }
 
 void
-ContactManager::onDnsCollectEndorseValidated(const shared_ptr<const Data>& data,
+ContactManager::onDnsCollectEndorseValidated(const Data& data,
                                              const Name& identity)
 {
   try {
     shared_ptr<EndorseCollection> endorseCollection =
-      make_shared<EndorseCollection>(data->getContent());
+      make_shared<EndorseCollection>(data.getContent());
     m_bufferedContacts[identity].m_endorseCollection = endorseCollection;
     fetchEndorseCertificateInternal(identity, 0);
   }
@@ -272,8 +272,8 @@ ContactManager::onDnsCollectEndorseValidated(const shared_ptr<const Data>& data,
 }
 
 void
-ContactManager::onDnsCollectEndorseValidationFailed(const shared_ptr<const Data>& data,
-                                                    const string& failInfo,
+ContactManager::onDnsCollectEndorseValidationFailed(const Data& data,
+                                                    const ndn::security::v2::ValidationError& error,
                                                     const Name& identity)
 {
   prepareEndorseInfo(identity);
@@ -331,8 +331,8 @@ ContactManager::collectEndorsement()
       Interest interest(interestName);
       interest.setInterestLifetime(time::milliseconds(1000));
 
-      OnDataValidated onValidated = bind(&ContactManager::onDnsEndorseeValidated, this, _1);
-      OnDataValidationFailed onValidationFailed =
+      ndn::security::v2::DataValidationSuccessCallback onValidated = bind(&ContactManager::onDnsEndorseeValidated, this, _1);
+      ndn::security::v2::DataValidationFailureCallback onValidationFailed =
         bind(&ContactManager::onDnsEndorseeValidationFailed, this, _1, _2);
       TimeoutNotify timeoutNotify = bind(&ContactManager::onDnsEndorseeTimeoutNotify, this, _1);
 
@@ -342,10 +342,10 @@ ContactManager::collectEndorsement()
 }
 
 void
-ContactManager::onDnsEndorseeValidated(const shared_ptr<const Data>& data)
+ContactManager::onDnsEndorseeValidated(const Data& data)
 {
   Data endorseData;
-  endorseData.wireDecode(data->getContent().blockFromValue());
+  endorseData.wireDecode(data.getContent().blockFromValue());
 
   EndorseCertificate endorseCertificate(endorseData);
   m_contactStorage->updateCollectEndorse(endorseCertificate);
@@ -354,8 +354,8 @@ ContactManager::onDnsEndorseeValidated(const shared_ptr<const Data>& data)
 }
 
 void
-ContactManager::onDnsEndorseeValidationFailed(const shared_ptr<const Data>& data,
-                                              const string& failInfo)
+ContactManager::onDnsEndorseeValidationFailed(const Data& data,
+                                              const ndn::security::v2::ValidationError& error)
 {
   decreaseCollectStatus();
 }
@@ -400,16 +400,16 @@ ContactManager::publishCollectEndorsedDataInDNS()
 }
 
 void
-ContactManager::onIdentityCertValidated(const shared_ptr<const Data>& data)
+ContactManager::onIdentityCertValidated(const Data& data)
 {
-  shared_ptr<Certificate> cert = make_shared<Certificate>(boost::cref(*data));
+  shared_ptr<Certificate> cert = make_shared<Certificate>(boost::cref(data));
   m_bufferedIdCerts[cert->getName()] = cert;
   decreaseIdCertCount();
 }
 
 void
-ContactManager::onIdentityCertValidationFailed(const shared_ptr<const Data>& data,
-                                               const string& failInfo)
+ContactManager::onIdentityCertValidationFailed(const Data& data,
+                                               const ndn::security::v2::ValidationError& error)
 {
   // _LOG_DEBUG("ContactManager::onIdentityCertValidationFailed " << data->getName());
   decreaseIdCertCount();
@@ -533,8 +533,8 @@ ContactManager::publishEndorseCertificateInDNS(const EndorseCertificate& endorse
 
 void
 ContactManager::sendInterest(const Interest& interest,
-                             const OnDataValidated& onValidated,
-                             const OnDataValidationFailed& onValidationFailed,
+                             const ndn::security::v2::DataValidationSuccessCallback& onValidated,
+                             const ndn::security::v2::DataValidationFailureCallback& onValidationFailed,
                              const TimeoutNotify& timeoutNotify,
                              int retry /* = 1 */)
 {
@@ -549,24 +549,17 @@ ContactManager::sendInterest(const Interest& interest,
 void
 ContactManager::onTargetData(const Interest& interest,
                              const Data& data,
-                             const OnDataValidated& onValidated,
-                             const OnDataValidationFailed& onValidationFailed)
+                             const ndn::security::v2::DataValidationSuccessCallback& onValidated,
+                             const ndn::security::v2::DataValidationFailureCallback& onValidationFailed)
 {
-  // _LOG_DEBUG("On receiving data: " << data.getName());
-  m_validator->validate(data,
-                        [&] (const ndn::Data& data) {
-                            onValidated(data.shared_from_this());
-                        },
-                        [&] (const ndn::Data& data, const ndn::security::v2::ValidationError& error) {
-                            onValidationFailed(data.shared_from_this(), error.getInfo());
-                        });
+  m_validator->validate(data, onValidated, onValidationFailed);
 }
 
 void
 ContactManager::onTargetTimeout(const Interest& interest,
                                 int retry,
-                                const OnDataValidated& onValidated,
-                                const OnDataValidationFailed& onValidationFailed,
+                                const ndn::security::v2::DataValidationSuccessCallback& onValidated,
+                                const ndn::security::v2::DataValidationFailureCallback& onValidationFailed,
                                 const TimeoutNotify& timeoutNotify)
 {
   // _LOG_DEBUG("On interest timeout: " << interest.getName());
@@ -652,9 +645,9 @@ ContactManager::onFetchContactInfo(const QString& identity)
   interest.setInterestLifetime(time::milliseconds(1000));
   interest.setMustBeFresh(true);
 
-  OnDataValidated onValidated =
+  ndn::security::v2::DataValidationSuccessCallback onValidated =
     bind(&ContactManager::onDnsSelfEndorseCertValidated, this, _1, identityName);
-  OnDataValidationFailed onValidationFailed =
+  ndn::security::v2::DataValidationFailureCallback onValidationFailed =
     bind(&ContactManager::onDnsSelfEndorseCertValidationFailed, this, _1, _2, identityName);
   TimeoutNotify timeoutNotify =
     bind(&ContactManager::onDnsSelfEndorseCertTimeoutNotify, this, _1, identityName);
@@ -786,9 +779,9 @@ ContactManager::onRefreshBrowseContact()
     interest.setInterestLifetime(time::milliseconds(1000));
     interest.setMustBeFresh(true);
 
-    OnDataValidated onValidated =
+    ndn::security::v2::DataValidationSuccessCallback onValidated =
     bind(&ContactManager::onIdentityCertValidated, this, _1);
-    OnDataValidationFailed onValidationFailed =
+    ndn::security::v2::DataValidationFailureCallback onValidationFailed =
     bind(&ContactManager::onIdentityCertValidationFailed, this, _1, _2);
     TimeoutNotify timeoutNotify =
     bind(&ContactManager::onIdentityCertTimeoutNotify, this, _1);
