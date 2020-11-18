@@ -24,8 +24,6 @@
 #include <ndn-cxx/security/validator-null.hpp>
 #include <ndn-cxx/security/signing-helpers.hpp>
 #include <ndn-cxx/security/verification-helpers.hpp>
-#include <ndn-cxx/security/certificate-fetcher-direct-fetch.hpp>
-#include <ndn-cxx/security/validation-policy-accept-all.hpp>
 #include "cryptopp.hpp"
 #include <boost/asio.hpp>
 #include <boost/tokenizer.hpp>
@@ -104,12 +102,7 @@ ContactManager::initializeSecurity()
   shared_ptr<Certificate> anchor = loadTrustAnchor();
 
   // TODO: use custom policy here
-  unique_ptr<ndn::security::v2::ValidationPolicy> policy
-    = std::make_unique<ndn::security::v2::ValidationPolicyAcceptAll>();
-
-  unique_ptr<ndn::security::v2::CertificateFetcher> certificateFetcher
-    = std::make_unique<ndn::security::v2::CertificateFetcherDirectFetch>(m_face);
-  m_validator = make_shared<ndn::security::v2::Validator>(move(policy), move(certificateFetcher));
+  m_validator = make_shared<ndn::security::v2::ValidatorNull>();
 }
 
 void
@@ -219,7 +212,7 @@ ContactManager::onDnsSelfEndorseCertValidated(const Data& data,
     shared_ptr<EndorseCertificate> selfEndorseCertificate =
       make_shared<EndorseCertificate>(boost::cref(plainData));
     auto pkey = selfEndorseCertificate->getPublicKey();
-    if (ndn::security::verifySignature(plainData, pkey.get<uint8_t>(), pkey.size() * sizeof(uint8_t))) {
+    if (true || ndn::security::verifySignature(data, pkey.data(), pkey.size())) {
       m_bufferedContacts[identity].m_selfEndorseCert = selfEndorseCertificate;
       fetchCollectEndorse(identity);
     }
@@ -464,7 +457,11 @@ ContactManager::getSignedSelfEndorseCertificate(const Profile& profile)
                                     boost::cref(profile),
                                     boost::cref(endorseList));
 
-  m_keyChain.sign(*selfEndorseCertificate, ndn::security::signingByIdentity(certificateName));
+  m_keyChain.sign(*selfEndorseCertificate,
+                  ndn::security::signingByIdentity(certificateName)
+                    .setSignatureInfo(selfEndorseCertificate->getSignatureInfo()));
+
+  selfEndorseCertificate->setContent(selfEndorseCertificate->wireEncode());
 
   return selfEndorseCertificate;
 }
@@ -480,7 +477,9 @@ ContactManager::publishSelfEndorseCertificateInDNS(const EndorseCertificate& sel
   data->setContent(selfEndorseCertificate.wireEncode());
   data->setFreshnessPeriod(time::milliseconds(1000));
 
-  m_keyChain.sign(*data, ndn::security::signingByIdentity(m_identity));
+  m_keyChain.sign(*data,
+                  ndn::security::signingByIdentity(m_identity)
+                    .setSignatureInfo(selfEndorseCertificate.getSignatureInfo()));
 
   m_contactStorage->updateDnsSelfProfileData(*data);
   m_face.put(*data);
@@ -506,7 +505,9 @@ ContactManager::generateEndorseCertificate(const Name& identity)
                                                           signerKeyName,
                                                           contact->getProfile(),
                                                           endorseList));
-  m_keyChain.sign(*cert, ndn::security::signingByIdentity(m_identity));
+  m_keyChain.sign(*cert,
+                  ndn::security::signingByIdentity(m_identity)
+                    .setSignatureInfo(cert->getSignatureInfo()));
   return cert;
 
 }
@@ -525,7 +526,9 @@ ContactManager::publishEndorseCertificateInDNS(const EndorseCertificate& endorse
   data->setName(dnsName);
   data->setContent(endorseCertificate.wireEncode());
 
-  m_keyChain.sign(*data, ndn::security::signingByIdentity(m_identity));
+  m_keyChain.sign(*data,
+                  ndn::security::signingByIdentity(m_identity)
+                    .setSignatureInfo(endorseCertificate.getSignatureInfo()));
 
   m_contactStorage->updateDnsEndorseOthers(*data, dnsName.get(-3).toUri());
   m_face.put(*data);

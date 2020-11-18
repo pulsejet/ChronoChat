@@ -58,7 +58,7 @@ Controller::Controller(QWidget* parent)
 {
   qRegisterMetaType<ndn::Name>("ndn.Name");
   qRegisterMetaType<ndn::security::v2::Certificate>("ndn.security.v2.Certificate");
-  qRegisterMetaType<chronochat::EndorseInfo>("chronochat.EndorseInfo");
+  qRegisterMetaType<chronochat::EndorseInfo>("EndorseInfo");
   qRegisterMetaType<ndn::Interest>("ndn.Interest");
   qRegisterMetaType<size_t>("size_t");
   qRegisterMetaType<chronochat::ChatroomInfo>("chronochat.Chatroom");
@@ -621,7 +621,6 @@ Controller::onAddContactAction()
 void
 Controller::onContactListAction()
 {
-  m_contactPanel->resetPanel();
   m_contactPanel->show();
   m_contactPanel->raise();
 }

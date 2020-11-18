@@ -54,13 +54,13 @@ EndorseCertificate::EndorseCertificate(const Certificate& kskCertificate,
   , m_endorseList(endorseList)
 {
   m_keyName = kskCertificate.getName().getSubName(-1);
-  m_signer = m_keyName;
+  m_signer = "SELF";
 
   Name dataName = m_keyName;
   dataName.append("PROFILE-CERT")
           .append("KEY")
           .append(m_keyName)
-          .append("SELF")
+          .append(m_signer)
           .appendVersion();
   setName(dataName);
 
@@ -101,7 +101,7 @@ EndorseCertificate::EndorseCertificate(const EndorseCertificate& endorseCertific
         .append("KEY")
         .append(m_keyName)
         .append(m_signer)
-        .append(m_signer.wireEncode()).appendVersion();
+        .appendVersion();
   setName(dataName);
 
   setMetaInfo(endorseCertificate.getMetaInfo());
@@ -145,7 +145,7 @@ EndorseCertificate::EndorseCertificate(const Name& keyName,
       .append("KEY")
       .append(m_keyName)
       .append(m_signer)
-      .append(m_signer.wireEncode()).appendVersion();
+      .appendVersion();
   setName(dataName);
 
   ndn::security::v2::AdditionalDescription description;
@@ -178,11 +178,12 @@ EndorseCertificate::EndorseCertificate(const Data& data)
 {
   const Name& dataName = data.getName();
 
-  if(dataName.size() < 3 || dataName.get(-3).toUri() != "PROFILE-CERT")
+  if(dataName.size() < 5 || dataName.get(-5).toUri() != "PROFILE-CERT")
     throw Error("No PROFILE-CERT component in data name!");
 
-  m_keyName = dataName.getPrefix(-3);
-  m_signer.wireDecode(dataName.get(-2).blockFromValue());
+  m_keyName = dataName.getPrefix(-5);
+  // m_signer.wireDecode(dataName.get(-2).blockFromValue());
+  m_signer = "SELF";
 
   auto profileWire = getSignatureInfo().getCustomTlv(tlv::Profile);
   if (profileWire) {

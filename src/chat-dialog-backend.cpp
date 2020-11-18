@@ -251,7 +251,7 @@ ChatDialogBackend::processChatData(const ndn::shared_ptr<const ndn::Data>& data,
   try {
     msg.wireDecode(data->getContent().blockFromValue());
   }
-  catch (tlv::Error) {
+  catch (tlv::Error&) {
     // nasty stuff: as a remedy, we'll form some standard msg for inparsable msgs
     msg.setNick("inconnu");
     msg.setMsgType(ChatMessage::OTHER);
