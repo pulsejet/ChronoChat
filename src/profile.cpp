@@ -11,6 +11,7 @@
 
 #include "profile.hpp"
 #include "logging.h"
+#include <ndn-cxx/security/additional-description.hpp>
 
 namespace chronochat {
 
@@ -32,6 +33,30 @@ Profile::Profile(const Certificate& identityCertificate)
   Name keyName = identityCertificate.getKeyName();
 
   m_entries[string("IDENTITY")] = keyName.getPrefix(-1).toUri();
+
+  auto additionalWire = identityCertificate.getSignatureInfo().getCustomTlv(tlv::AdditionalDescription);
+  if (additionalWire) {
+    ndn::security::v2::AdditionalDescription additional(*additionalWire);
+
+    for (auto it = additional.begin(); it != additional.end(); it++) {
+      const string oidStr = it->first;
+      string valueStr = it->second;
+      if (oidStr == OID_NAME)
+        m_entries["name"] = valueStr;
+      else if (oidStr == OID_ORG)
+        m_entries["institution"] = valueStr;
+      else if (oidStr == OID_GROUP)
+        m_entries["group"] = valueStr;
+      else if (oidStr == OID_HOMEPAGE)
+        m_entries["homepage"] = valueStr;
+      else if (oidStr == OID_ADVISOR)
+        m_entries["advisor"] = valueStr;
+      else if (oidStr == OID_EMAIL)
+        m_entries["email"] = valueStr;
+      else
+        m_entries[oidStr] = valueStr;
+    }
+  }
 }
 
 Profile::Profile(const Name& identityName)
