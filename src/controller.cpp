@@ -322,7 +322,7 @@ Controller::loadConf()
     else
       m_nick = m_identity.get(-1).toUri();
   }
-  catch (tlv::Error) {
+  catch (tlv::Error&) {
     m_identity.clear();
     m_identity.append("chronochat-tmp-identity")
               .append(getRandomString());

@@ -266,7 +266,7 @@ ContactManager::onDnsCollectEndorseValidated(const shared_ptr<const Data>& data,
     m_bufferedContacts[identity].m_endorseCollection = endorseCollection;
     fetchEndorseCertificateInternal(identity, 0);
   }
-  catch (tlv::Error) {
+  catch (tlv::Error&) {
     prepareEndorseInfo(identity);
   }
 }

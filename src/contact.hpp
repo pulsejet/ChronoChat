@@ -28,8 +28,8 @@ public:
   Contact(const ndn::security::v2::Certificate& identityCertificate,
           bool isIntroducer = false,
           const std::string& alias = "")
-    : m_notBefore(identityCertificate.getValidityPeriod().getPeriod().first)
-    , m_notAfter(identityCertificate.getValidityPeriod().getPeriod().second)
+    : m_notBefore(time::system_clock::now())
+    , m_notAfter(time::system_clock::now() + time::days(3650))
     , m_isIntroducer(isIntroducer)
     , m_profile(identityCertificate)
   {
@@ -40,13 +40,18 @@ public:
     m_keyName = identityCertificate.getKeyName();
     m_namespace = m_keyName.getPrefix(-1);
     m_publicKey = identityCertificate.getPublicKey();
+
+    try {
+      m_notBefore = identityCertificate.getValidityPeriod().getPeriod().first;
+      m_notAfter = identityCertificate.getValidityPeriod().getPeriod().second;
+    } catch (tlv::Error&) {}
   }
 
   Contact(const EndorseCertificate& endorseCertificate,
           bool isIntroducer = false,
           const std::string& alias = "")
-    : m_notBefore(endorseCertificate.getValidityPeriod().getPeriod().first)
-    , m_notAfter(endorseCertificate.getValidityPeriod().getPeriod().second)
+    : m_notBefore(time::system_clock::now())
+    , m_notAfter(time::system_clock::now() + time::days(3650))
     , m_isIntroducer(isIntroducer)
   {
     m_profile = endorseCertificate.getProfile();
@@ -58,6 +63,11 @@ public:
     m_keyName = endorseCertificate.getPublicKeyName();;
     m_namespace = m_keyName.getPrefix(-1);
     m_publicKey = endorseCertificate.getPublicKey();
+
+    try {
+      m_notBefore = endorseCertificate.getValidityPeriod().getPeriod().first;
+      m_notAfter = endorseCertificate.getValidityPeriod().getPeriod().second;
+    } catch (tlv::Error&) {}
   }
 
   Contact(const Name& identity,

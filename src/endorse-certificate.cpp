@@ -13,6 +13,7 @@
 #include <boost/iostreams/stream.hpp>
 #include <ndn-cxx/encoding/buffer-stream.hpp>
 #include <ndn-cxx/security/additional-description.hpp>
+#include <ndn-cxx/security/validity-period.hpp>
 #include "endorse-extension.hpp"
 #include <list>
 
@@ -59,9 +60,6 @@ EndorseCertificate::EndorseCertificate(const Certificate& kskCertificate,
   dataName.append("PROFILE-CERT").append(m_signer.wireEncode()).appendVersion();
   setName(dataName);
 
-  auto period = kskCertificate.getValidityPeriod().getPeriod();
-  getValidityPeriod().setPeriod(period.first, period.second);
-  setContent(kskCertificate.getContent());
   setMetaInfo(kskCertificate.getMetaInfo());
 
   ndn::security::v2::AdditionalDescription description;
@@ -74,6 +72,14 @@ EndorseCertificate::EndorseCertificate(const Certificate& kskCertificate,
   signatureInfo.addCustomTlv(description.wireEncode());
   signatureInfo.addCustomTlv(m_profile.wireEncode());
   signatureInfo.addCustomTlv(endorseExtension.wireEncode());
+
+  try {
+    signatureInfo.setValidityPeriod(kskCertificate.getValidityPeriod());
+  } catch (tlv::Error&) {
+    signatureInfo.setValidityPeriod(ndn::security::ValidityPeriod(
+      time::system_clock::now(), time::system_clock::now() + time::days(3650)));
+  }
+
   setSignatureInfo(signatureInfo);
 }
 
@@ -90,9 +96,6 @@ EndorseCertificate::EndorseCertificate(const EndorseCertificate& endorseCertific
   dataName.append("PROFILE-CERT").append(m_signer.wireEncode()).appendVersion();
   setName(dataName);
 
-  auto period = endorseCertificate.getValidityPeriod().getPeriod();
-  getValidityPeriod().setPeriod(period.first, period.second);
-  setContent(endorseCertificate.getContent());
   setMetaInfo(endorseCertificate.getMetaInfo());
 
   ndn::security::v2::AdditionalDescription description;
@@ -105,6 +108,14 @@ EndorseCertificate::EndorseCertificate(const EndorseCertificate& endorseCertific
   signatureInfo.addCustomTlv(description.wireEncode());
   signatureInfo.addCustomTlv(m_profile.wireEncode());
   signatureInfo.addCustomTlv(endorseExtension.wireEncode());
+
+  try {
+    signatureInfo.setValidityPeriod(endorseCertificate.getValidityPeriod());
+  } catch (tlv::Error&) {
+    signatureInfo.setValidityPeriod(ndn::security::ValidityPeriod(
+      time::system_clock::now(), time::system_clock::now() + time::days(3650)));
+  }
+
   setSignatureInfo(signatureInfo);
 }
 
@@ -125,8 +136,6 @@ EndorseCertificate::EndorseCertificate(const Name& keyName,
   dataName.append("PROFILE-CERT").append(m_signer.wireEncode()).appendVersion();
   setName(dataName);
 
-  getValidityPeriod().setPeriod(notBefore, notAfter);
-
   ndn::security::v2::AdditionalDescription description;
   description.set("2.5.4.41", m_keyName.toUri());
 
@@ -137,6 +146,9 @@ EndorseCertificate::EndorseCertificate(const Name& keyName,
   signatureInfo.addCustomTlv(description.wireEncode());
   signatureInfo.addCustomTlv(m_profile.wireEncode());
   signatureInfo.addCustomTlv(endorseExtension.wireEncode());
+
+  signatureInfo.setValidityPeriod(ndn::security::ValidityPeriod(notBefore, notAfter));
+
   setSignatureInfo(signatureInfo);
 }
 
