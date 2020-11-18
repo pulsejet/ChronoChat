@@ -23,6 +23,7 @@
 #include <ndn-cxx/security/validator.hpp>
 #include <ndn-cxx/security/validator-null.hpp>
 #include <ndn-cxx/security/signing-helpers.hpp>
+#include <ndn-cxx/security/verification-helpers.hpp>
 #include "cryptopp.hpp"
 #include <boost/asio.hpp>
 #include <boost/tokenizer.hpp>
@@ -180,7 +181,8 @@ ContactManager::prepareEndorseInfo(const Name& identity)
       continue;
 
     // if (!Validator::verifySignature(**cIt, contact->getPublicKey()))
-      // continue;
+    if (!(*cIt)->isValid())
+      continue;
 
     const Profile& tmpProfile = (*cIt)->getProfile();
     if (tmpProfile != profile)
@@ -209,8 +211,8 @@ ContactManager::onDnsSelfEndorseCertValidated(const shared_ptr<const Data>& data
     plainData.wireDecode(data->getContent().blockFromValue());
     shared_ptr<EndorseCertificate> selfEndorseCertificate =
       make_shared<EndorseCertificate>(boost::cref(plainData));
-    //if (Validator::verifySignature(plainData, selfEndorseCertificate->getPublicKeyInfo())) {
-    if (true) {
+    auto pkey = selfEndorseCertificate->getPublicKey();
+    if (ndn::security::verifySignature(plainData, pkey.get<uint8_t>(), pkey.size() * sizeof(uint8_t))) {
       m_bufferedContacts[identity].m_selfEndorseCert = selfEndorseCertificate;
       fetchCollectEndorse(identity);
     }
