@@ -53,6 +53,11 @@ Profile::Profile(const Profile& profile)
 {
 }
 
+Profile::Profile(const Block& profileWire)
+{
+  this->wireDecode(profileWire);
+}
+
 template<ndn::encoding::Tag T>
 size_t
 Profile::wireEncode(ndn::EncodingImpl<T>& block) const

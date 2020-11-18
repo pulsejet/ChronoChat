@@ -12,6 +12,7 @@
 #include "endorse-certificate.hpp"
 #include <boost/iostreams/stream.hpp>
 #include <ndn-cxx/encoding/buffer-stream.hpp>
+#include <ndn-cxx/security/additional-description.hpp>
 #include "endorse-extension.hpp"
 #include <list>
 
@@ -62,6 +63,18 @@ EndorseCertificate::EndorseCertificate(const Certificate& kskCertificate,
   getValidityPeriod().setPeriod(period.first, period.second);
   setContent(kskCertificate.getContent());
   setMetaInfo(kskCertificate.getMetaInfo());
+
+  ndn::security::v2::AdditionalDescription description;
+  description.set("2.5.4.41", m_keyName.toUri());
+
+  EndorseExtension endorseExtension;
+  endorseExtension << m_endorseList;
+
+  ndn::SignatureInfo signatureInfo;
+  signatureInfo.addCustomTlv(description.wireEncode());
+  signatureInfo.addCustomTlv(m_profile.wireEncode());
+  signatureInfo.addCustomTlv(endorseExtension.wireEncode());
+  setSignatureInfo(signatureInfo);
 }
 
 EndorseCertificate::EndorseCertificate(const EndorseCertificate& endorseCertificate,
@@ -81,6 +94,18 @@ EndorseCertificate::EndorseCertificate(const EndorseCertificate& endorseCertific
   getValidityPeriod().setPeriod(period.first, period.second);
   setContent(endorseCertificate.getContent());
   setMetaInfo(endorseCertificate.getMetaInfo());
+
+  ndn::security::v2::AdditionalDescription description;
+  description.set("2.5.4.41", m_keyName.toUri());
+
+  EndorseExtension endorseExtension;
+  endorseExtension << m_endorseList;
+
+  ndn::SignatureInfo signatureInfo;
+  signatureInfo.addCustomTlv(description.wireEncode());
+  signatureInfo.addCustomTlv(m_profile.wireEncode());
+  signatureInfo.addCustomTlv(endorseExtension.wireEncode());
+  setSignatureInfo(signatureInfo);
 }
 
 EndorseCertificate::EndorseCertificate(const Name& keyName,
@@ -101,6 +126,18 @@ EndorseCertificate::EndorseCertificate(const Name& keyName,
   setName(dataName);
 
   getValidityPeriod().setPeriod(notBefore, notAfter);
+
+  ndn::security::v2::AdditionalDescription description;
+  description.set("2.5.4.41", m_keyName.toUri());
+
+  EndorseExtension endorseExtension;
+  endorseExtension << m_endorseList;
+
+  ndn::SignatureInfo signatureInfo;
+  signatureInfo.addCustomTlv(description.wireEncode());
+  signatureInfo.addCustomTlv(m_profile.wireEncode());
+  signatureInfo.addCustomTlv(endorseExtension.wireEncode());
+  setSignatureInfo(signatureInfo);
 }
 
 EndorseCertificate::EndorseCertificate(const EndorseCertificate& endorseCertificate)
@@ -122,6 +159,17 @@ EndorseCertificate::EndorseCertificate(const Data& data)
 
   m_keyName = dataName.getPrefix(-3);
   m_signer.wireDecode(dataName.get(-2).blockFromValue());
+
+  auto profileWire = getSignatureInfo().getCustomTlv(tlv::Profile);
+  if (profileWire) {
+    m_profile = Profile(*profileWire);
+  }
+
+  auto endorseExtensionBlock = getSignatureInfo().getCustomTlv(tlv::EndorseExtension);
+  if (endorseExtensionBlock) {
+    EndorseExtension endorseExtension(*endorseExtensionBlock);
+    endorseExtension >> m_endorseList;
+  }
 }
 
 } // namespace chronochat

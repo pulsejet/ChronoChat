@@ -54,6 +54,8 @@ public:
 
   Profile(const Profile& profile);
 
+  Profile(const Block& profileWire);
+
   ~Profile()
   {
   }
