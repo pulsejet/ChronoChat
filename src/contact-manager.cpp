@@ -211,8 +211,8 @@ ContactManager::onDnsSelfEndorseCertValidated(const Data& data,
     plainData.wireDecode(data.getContent().blockFromValue());
     shared_ptr<EndorseCertificate> selfEndorseCertificate =
       make_shared<EndorseCertificate>(boost::cref(plainData));
-    auto pkey = selfEndorseCertificate->getPublicKey();
-    if (true || ndn::security::verifySignature(data, pkey.data(), pkey.size())) {
+
+    if (ndn::security::verifySignature(plainData, *selfEndorseCertificate)) {
       m_bufferedContacts[identity].m_selfEndorseCert = selfEndorseCertificate;
       fetchCollectEndorse(identity);
     }
@@ -444,24 +444,23 @@ ContactManager::decreaseIdCertCount()
 shared_ptr<EndorseCertificate>
 ContactManager::getSignedSelfEndorseCertificate(const Profile& profile)
 {
-  Name certificateName = m_identity;
-  auto signingCert = make_shared<Certificate>();
-  signingCert->setName(certificateName);
+  auto signIdentity = m_keyChain.createIdentity(m_identity);
+  auto signKey = m_keyChain.createKey(signIdentity);
+  auto signCert = signKey.getDefaultCertificate();
+  m_keyChain.setDefaultIdentity(signIdentity);
 
   vector<string> endorseList;
   for (Profile::const_iterator it = profile.begin(); it != profile.end(); it++)
     endorseList.push_back(it->first);
 
   shared_ptr<EndorseCertificate> selfEndorseCertificate =
-    make_shared<EndorseCertificate>(boost::cref(*signingCert),
+    make_shared<EndorseCertificate>(boost::cref(signCert),
                                     boost::cref(profile),
                                     boost::cref(endorseList));
 
   m_keyChain.sign(*selfEndorseCertificate,
-                  ndn::security::signingByIdentity(certificateName)
-                    .setSignatureInfo(selfEndorseCertificate->getSignatureInfo()));
-
-  selfEndorseCertificate->setContent(selfEndorseCertificate->wireEncode());
+                  ndn::security::signingByKey(signKey).setSignatureInfo(
+                    selfEndorseCertificate->getSignatureInfo()));
 
   return selfEndorseCertificate;
 }

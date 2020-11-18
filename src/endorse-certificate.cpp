@@ -65,6 +65,7 @@ EndorseCertificate::EndorseCertificate(const Certificate& kskCertificate,
   setName(dataName);
 
   setMetaInfo(kskCertificate.getMetaInfo());
+  setContent(kskCertificate.getPublicKey().data(), kskCertificate.getPublicKey().size());
 
   ndn::security::v2::AdditionalDescription description;
   description.set("2.5.4.41", m_keyName.toUri());
@@ -105,6 +106,7 @@ EndorseCertificate::EndorseCertificate(const EndorseCertificate& endorseCertific
   setName(dataName);
 
   setMetaInfo(endorseCertificate.getMetaInfo());
+  setContent(endorseCertificate.getPublicKey().data(), endorseCertificate.getPublicKey().size());
 
   ndn::security::v2::AdditionalDescription description;
   description.set("2.5.4.41", m_keyName.toUri());
@@ -147,6 +149,8 @@ EndorseCertificate::EndorseCertificate(const Name& keyName,
       .append(m_signer)
       .appendVersion();
   setName(dataName);
+
+  setContent(key.data(), key.size());
 
   ndn::security::v2::AdditionalDescription description;
   description.set("2.5.4.41", m_keyName.toUri());
