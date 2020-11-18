@@ -458,6 +458,7 @@ ControllerBackend::onInvitationRequestResponded(const ndn::Name& invitationRespo
   else
     response->setContent(ndn::makeNonNegativeIntegerBlock(tlv::Content, 0));
 
+  response->setFreshnessPeriod(time::milliseconds(1000));
   m_keyChain.sign(*response);
   m_ims.insert(*response);
   m_face.put(*response);
@@ -476,7 +477,7 @@ ControllerBackend::onSendInvitationRequest(const QString& chatroomName, const QS
   interestName.appendTimestamp();
   Interest interest(interestName);
   interest.setInterestLifetime(time::milliseconds(10000));
-  interest.setMustBeFresh(false);
+  interest.setMustBeFresh(true);
   interest.getNonce();
   m_face.expressInterest(interest,
                          bind(&ControllerBackend::onRequestResponse, this, _1, _2),
