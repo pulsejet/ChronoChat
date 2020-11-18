@@ -9,7 +9,7 @@ def options(opt):
 def configure(conf):
     areCustomCxxflagsPresent = (len(conf.env.CXXFLAGS) > 0)
     defaultFlags = ['-std=c++14',
-                    '-Wall', '-Wno-nested-anon-types']
+                    '-Wall']
 
     if conf.options.debug:
         conf.define('_DEBUG', 1)
