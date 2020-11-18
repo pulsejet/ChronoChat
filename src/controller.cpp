@@ -757,6 +757,8 @@ Controller::onResetIcon()
 void
 Controller::onRemoveChatDialog(const QString& chatroomName)
 {
+  emit removeChatroom(chatroomName);
+
   ChatDialogList::iterator it = m_chatDialogList.find(chatroomName.toStdString());
   if (it != m_chatDialogList.end()) {
     ChatDialog* deletedChat = it->second;
