@@ -13,6 +13,7 @@
 
 #ifndef Q_MOC_RUN
 #include <ndn-cxx/util/segment-fetcher.hpp>
+#include <ndn-cxx/security/signing-helpers.hpp>
 #include "invitation.hpp"
 #include <iostream>
 #endif
@@ -245,7 +246,7 @@ ControllerBackend::onInvitationValidated(const shared_ptr<const Interest>& inter
 {
   Invitation invitation(interest->getName());
   // Should be obtained via a method of ContactManager.
-  string alias = invitation.getInviterCertificate().getName().getPrefix(-1).toUri();
+  string alias = invitation.getInviterCertificate().getKeyName().getPrefix(-1).toUri();
 
   emit invitationValidated(QString::fromStdString(alias),
                            QString::fromStdString(invitation.getChatroom()),
@@ -422,7 +423,7 @@ ControllerBackend::onInvitationResponded(const ndn::Name& invitationName, bool a
     response->setFreshnessPeriod(time::milliseconds(1000));
   }
 
-  m_keyChain.sign(*response);
+  m_keyChain.sign(*response, ndn::security::signingByIdentity(m_identity));
 
   // Check if we need a wrapper
   Name invitationRoutingPrefix = getInvitationRoutingPrefix();
@@ -440,7 +441,7 @@ ControllerBackend::onInvitationResponded(const ndn::Name& invitationName, bool a
     wrappedData->setContent(response->wireEncode());
     wrappedData->setFreshnessPeriod(time::milliseconds(1000));
 
-    m_keyChain.sign(*wrappedData);
+    m_keyChain.sign(*wrappedData, ndn::security::signingByIdentity(m_identity));
     m_face.put(*wrappedData);
   }
 
@@ -459,7 +460,7 @@ ControllerBackend::onInvitationRequestResponded(const ndn::Name& invitationRespo
     response->setContent(ndn::makeNonNegativeIntegerBlock(tlv::Content, 0));
 
   response->setFreshnessPeriod(time::milliseconds(1000));
-  m_keyChain.sign(*response);
+  m_keyChain.sign(*response, ndn::security::signingByIdentity(m_identity));
   m_ims.insert(*response);
   m_face.put(*response);
 }
