@@ -53,22 +53,15 @@ EndorseCertificate::EndorseCertificate(const Certificate& kskCertificate,
   , m_profile(profile)
   , m_endorseList(endorseList)
 {
-  m_keyName = kskCertificate.getName().getSubName(-1);
-  m_signer = "SELF";
-
-  Name dataName = m_keyName;
-  dataName.append("PROFILE-CERT")
-          .append("KEY")
-          .append(m_keyName)
-          .append(m_signer)
-          .appendVersion();
-  setName(dataName);
+  setName(kskCertificate.getName());
+  m_signer = getKeyName();
 
   setMetaInfo(kskCertificate.getMetaInfo());
   setContent(kskCertificate.getPublicKey().data(), kskCertificate.getPublicKey().size());
 
   ndn::security::v2::AdditionalDescription description;
-  description.set("2.5.4.41", m_keyName.toUri());
+  description.set("2.5.4.41", getName().toUri());
+  description.set("signer", m_signer.toUri());
 
   EndorseExtension endorseExtension;
   endorseExtension << m_endorseList;
@@ -92,24 +85,18 @@ EndorseCertificate::EndorseCertificate(const EndorseCertificate& endorseCertific
                                        const Name& signer,
                                        const vector<string>& endorseList)
   : Certificate()
-  , m_keyName(endorseCertificate.m_keyName)
   , m_signer(signer)
   , m_profile(endorseCertificate.m_profile)
   , m_endorseList(endorseList)
 {
-  Name dataName = m_keyName;
-  dataName.append("PROFILE-CERT")
-        .append("KEY")
-        .append(m_keyName)
-        .append(m_signer)
-        .appendVersion();
-  setName(dataName);
+  setName(endorseCertificate.getName());
 
   setMetaInfo(endorseCertificate.getMetaInfo());
   setContent(endorseCertificate.getPublicKey().data(), endorseCertificate.getPublicKey().size());
 
   ndn::security::v2::AdditionalDescription description;
-  description.set("2.5.4.41", m_keyName.toUri());
+  description.set("2.5.4.41", getKeyName().toUri());
+  description.set("signer", m_signer.toUri());
 
   EndorseExtension endorseExtension;
   endorseExtension << m_endorseList;
@@ -137,23 +124,17 @@ EndorseCertificate::EndorseCertificate(const Name& keyName,
                                        const Profile& profile,
                                        const vector<string>& endorseList)
   : Certificate()
-  , m_keyName(keyName)
   , m_signer(signer)
   , m_profile(profile)
   , m_endorseList(endorseList)
 {
-  Name dataName = m_keyName;
-  dataName.append("PROFILE-CERT")
-      .append("KEY")
-      .append(m_keyName)
-      .append(m_signer)
-      .appendVersion();
-  setName(dataName);
+  setName(keyName);
 
   setContent(key.data(), key.size());
 
   ndn::security::v2::AdditionalDescription description;
-  description.set("2.5.4.41", m_keyName.toUri());
+  description.set("2.5.4.41", keyName.toUri());
+  description.set("signer", m_signer.toUri());
 
   EndorseExtension endorseExtension;
   endorseExtension << m_endorseList;
@@ -170,7 +151,6 @@ EndorseCertificate::EndorseCertificate(const Name& keyName,
 
 EndorseCertificate::EndorseCertificate(const EndorseCertificate& endorseCertificate)
   : Certificate(endorseCertificate)
-  , m_keyName(endorseCertificate.m_keyName)
   , m_signer(endorseCertificate.m_signer)
   , m_profile(endorseCertificate.m_profile)
   , m_endorseList(endorseCertificate.m_endorseList)
@@ -180,14 +160,12 @@ EndorseCertificate::EndorseCertificate(const EndorseCertificate& endorseCertific
 EndorseCertificate::EndorseCertificate(const Data& data)
   : Certificate(data)
 {
-  const Name& dataName = data.getName();
 
-  if(dataName.size() < 5 || dataName.get(-5).toUri() != "PROFILE-CERT")
-    throw Error("No PROFILE-CERT component in data name!");
-
-  m_keyName = dataName.getPrefix(-5);
-  // m_signer.wireDecode(dataName.get(-2).blockFromValue());
-  m_signer = "SELF";
+  auto additionalWire = getSignatureInfo().getCustomTlv(tlv::AdditionalDescription);
+  if (additionalWire) {
+    ndn::security::v2::AdditionalDescription additional(*additionalWire);
+    m_signer = additional.get("signer");
+  }
 
   auto profileWire = getSignatureInfo().getCustomTlv(tlv::Profile);
   if (profileWire) {

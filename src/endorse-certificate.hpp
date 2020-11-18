@@ -75,18 +75,10 @@ public:
     return m_endorseList;
   }
 
-  const Name&
-  getPublicKeyName () const
-  {
-    return m_keyName;
-  }
-
 private:
-  Name m_keyName;
-  Name m_signer; // signing key name
+  Name m_signer;
   Profile m_profile;
   std::vector<std::string> m_endorseList;
-
 };
 
 } // namespace chronochat

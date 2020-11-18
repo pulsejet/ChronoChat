@@ -60,7 +60,7 @@ public:
     m_alias = alias.empty() ? m_name : alias;
     m_institution = m_profile.get("institution");
 
-    m_keyName = endorseCertificate.getPublicKeyName();;
+    m_keyName = endorseCertificate.getKeyName();;
     m_namespace = m_keyName.getPrefix(-1);
     m_publicKey = endorseCertificate.getPublicKey();
 
