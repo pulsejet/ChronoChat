@@ -172,6 +172,7 @@ ContactManager::prepareEndorseInfo(const Name& identity)
     m_bufferedContacts[identity].m_endorseCertList.end();
 
   for (; cIt != cEnd; cIt++, endorseCertCount++) {
+    std::cout << (*cIt)->getSigner().getPrefix(-1) << std::endl;
     shared_ptr<Contact> contact = getContact((*cIt)->getSigner().getPrefix(-1));
     if (!static_cast<bool>(contact))
       continue;
@@ -387,9 +388,7 @@ ContactManager::publishCollectEndorsedDataInDNS()
 
   data->setContent(endorseCollection.wireEncode());
 
-  auto signIdentity = m_keyChain.createIdentity(m_identity);
-  auto signKey = m_keyChain.createKey(signIdentity);
-  m_keyChain.sign(*data, ndn::security::signingByKey(signKey));
+  m_keyChain.sign(*data, ndn::security::signingByIdentity(m_identity));
 
   m_contactStorage->updateDnsOthersEndorse(*data);
   m_face.put(*data);
@@ -447,11 +446,8 @@ ContactManager::decreaseIdCertCount()
 shared_ptr<EndorseCertificate>
 ContactManager::getSignedSelfEndorseCertificate(const Profile& profile)
 {
-  auto signIdentity = m_keyChain.createIdentity(m_identity);
-  auto signKey = m_keyChain.createKey(signIdentity);
-  auto signCert = signKey.getDefaultCertificate();
-  m_keyChain.setDefaultIdentity(signIdentity);
-
+  auto signCert = m_keyChain.getPib().getIdentity(m_identity)
+                            .getDefaultKey().getDefaultCertificate();
   vector<string> endorseList;
   for (Profile::const_iterator it = profile.begin(); it != profile.end(); it++)
     endorseList.push_back(it->first);
@@ -462,7 +458,7 @@ ContactManager::getSignedSelfEndorseCertificate(const Profile& profile)
                                     boost::cref(endorseList));
 
   m_keyChain.sign(*selfEndorseCertificate,
-                  ndn::security::signingByKey(signKey).setSignatureInfo(
+                  ndn::security::signingByIdentity(m_identity).setSignatureInfo(
                     selfEndorseCertificate->getSignatureInfo()));
 
   return selfEndorseCertificate;
@@ -479,9 +475,7 @@ ContactManager::publishSelfEndorseCertificateInDNS(const EndorseCertificate& sel
   data->setContent(selfEndorseCertificate.wireEncode());
   data->setFreshnessPeriod(time::milliseconds(1000));
 
-  auto signIdentity = m_keyChain.createIdentity(m_identity);
-  auto signKey = m_keyChain.createKey(signIdentity);
-  m_keyChain.sign(*data, ndn::security::signingByKey(signKey));
+  m_keyChain.sign(*data, ndn::security::signingByIdentity(m_identity));
 
   m_contactStorage->updateDnsSelfProfileData(*data);
   m_face.put(*data);
@@ -490,9 +484,8 @@ ContactManager::publishSelfEndorseCertificateInDNS(const EndorseCertificate& sel
 shared_ptr<EndorseCertificate>
 ContactManager::generateEndorseCertificate(const Name& identity)
 {
-  auto signIdentity = m_keyChain.createIdentity(m_identity);
-  auto signKey = m_keyChain.createKey(signIdentity);
-  auto signCert = signKey.getDefaultCertificate();
+  auto signCert = m_keyChain.getPib().getIdentity(m_identity)
+                            .getDefaultKey().getDefaultCertificate();
 
   shared_ptr<Contact> contact = getContact(identity);
   if (!static_cast<bool>(contact))
@@ -513,7 +506,7 @@ ContactManager::generateEndorseCertificate(const Name& identity)
                                                           contact->getProfile(),
                                                           endorseList));
   m_keyChain.sign(*cert,
-                  ndn::security::signingByKey(signKey)
+                  ndn::security::signingByIdentity(m_identity)
                     .setSignatureInfo(cert->getSignatureInfo()));
   return cert;
 
@@ -533,9 +526,7 @@ ContactManager::publishEndorseCertificateInDNS(const EndorseCertificate& endorse
   data->setName(dnsName);
   data->setContent(endorseCertificate.wireEncode());
 
-  auto signIdentity = m_keyChain.createIdentity(m_identity);
-  auto signKey = m_keyChain.createKey(signIdentity);
-  m_keyChain.sign(*data, ndn::security::signingByKey(signKey));
+  m_keyChain.sign(*data, ndn::security::signingByIdentity(m_identity));
 
   m_contactStorage->updateDnsEndorseOthers(*data, dnsName.get(-3).toUri());
   m_face.put(*data);
@@ -616,6 +607,10 @@ void
 ContactManager::onIdentityUpdated(const QString& identity)
 {
   m_identity = Name(identity.toStdString());
+  auto signIdentity = m_keyChain.createIdentity(m_identity);
+  auto signKey = m_keyChain.createKey(signIdentity);
+  m_keyChain.setDefaultIdentity(signIdentity);
+  m_keyChain.setDefaultKey(signIdentity, signKey);
 
   m_contactStorage = make_shared<ContactStorage>(m_identity);
 
