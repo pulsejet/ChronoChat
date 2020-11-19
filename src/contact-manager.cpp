@@ -172,7 +172,6 @@ ContactManager::prepareEndorseInfo(const Name& identity)
     m_bufferedContacts[identity].m_endorseCertList.end();
 
   for (; cIt != cEnd; cIt++, endorseCertCount++) {
-    std::cout << (*cIt)->getSigner().getPrefix(-1) << std::endl;
     shared_ptr<Contact> contact = getContact((*cIt)->getSigner().getPrefix(-1));
     if (!static_cast<bool>(contact))
       continue;
