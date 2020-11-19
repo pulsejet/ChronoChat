@@ -69,7 +69,9 @@ EndorseCertificate::EndorseCertificate(const Certificate& kskCertificate,
   ndn::SignatureInfo signatureInfo;
   signatureInfo.addCustomTlv(description.wireEncode());
   signatureInfo.addCustomTlv(m_profile.wireEncode());
-  signatureInfo.addCustomTlv(endorseExtension.wireEncode());
+
+  if (m_endorseList.size() > 0)
+    signatureInfo.addCustomTlv(endorseExtension.wireEncode());
 
   try {
     signatureInfo.setValidityPeriod(kskCertificate.getValidityPeriod());
@@ -89,7 +91,10 @@ EndorseCertificate::EndorseCertificate(const EndorseCertificate& endorseCertific
   , m_profile(endorseCertificate.m_profile)
   , m_endorseList(endorseList)
 {
-  setName(endorseCertificate.getName());
+  setName(endorseCertificate.getName()
+                 .getPrefix(-2)
+                 .append(m_signer.getSubName(-1))
+                 .appendVersion());
 
   setMetaInfo(endorseCertificate.getMetaInfo());
   setContent(endorseCertificate.getPublicKey().data(), endorseCertificate.getPublicKey().size());
@@ -104,7 +109,9 @@ EndorseCertificate::EndorseCertificate(const EndorseCertificate& endorseCertific
   ndn::SignatureInfo signatureInfo;
   signatureInfo.addCustomTlv(description.wireEncode());
   signatureInfo.addCustomTlv(m_profile.wireEncode());
-  signatureInfo.addCustomTlv(endorseExtension.wireEncode());
+
+  if (m_endorseList.size() > 0)
+    signatureInfo.addCustomTlv(endorseExtension.wireEncode());
 
   try {
     signatureInfo.setValidityPeriod(endorseCertificate.getValidityPeriod());
@@ -120,6 +127,7 @@ EndorseCertificate::EndorseCertificate(const Name& keyName,
                                        const ndn::Buffer& key,
                                        const time::system_clock::TimePoint& notBefore,
                                        const time::system_clock::TimePoint& notAfter,
+                                       const Name::Component& signerKeyId,
                                        const Name& signer,
                                        const Profile& profile,
                                        const vector<string>& endorseList)
@@ -128,7 +136,10 @@ EndorseCertificate::EndorseCertificate(const Name& keyName,
   , m_profile(profile)
   , m_endorseList(endorseList)
 {
-  setName(keyName);
+  setName(keyName.getPrefix(-1)
+                 .append(signerKeyId)
+                 .append(m_signer.getSubName(-1))
+                 .appendVersion());
 
   setContent(key.data(), key.size());
 
@@ -142,7 +153,9 @@ EndorseCertificate::EndorseCertificate(const Name& keyName,
   ndn::SignatureInfo signatureInfo;
   signatureInfo.addCustomTlv(description.wireEncode());
   signatureInfo.addCustomTlv(m_profile.wireEncode());
-  signatureInfo.addCustomTlv(endorseExtension.wireEncode());
+
+  if (m_endorseList.size() > 0)
+    signatureInfo.addCustomTlv(endorseExtension.wireEncode());
 
   signatureInfo.setValidityPeriod(ndn::security::ValidityPeriod(notBefore, notAfter));
 

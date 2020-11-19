@@ -44,6 +44,7 @@ public:
                      const ndn::Buffer& key,
                      const time::system_clock::TimePoint& notBefore,
                      const time::system_clock::TimePoint& notAfter,
+                     const Name::Component& signerKeyId,
                      const Name& signer,
                      const Profile& profile,
                      const std::vector<std::string>& endorseList = DEFAULT_ENDORSE_LIST);

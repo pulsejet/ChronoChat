@@ -487,6 +487,10 @@ ContactManager::publishSelfEndorseCertificateInDNS(const EndorseCertificate& sel
 shared_ptr<EndorseCertificate>
 ContactManager::generateEndorseCertificate(const Name& identity)
 {
+  auto signIdentity = m_keyChain.createIdentity(m_identity);
+  auto signKey = m_keyChain.createKey(signIdentity);
+  auto signCert = signKey.getDefaultCertificate();
+
   shared_ptr<Contact> contact = getContact(identity);
   if (!static_cast<bool>(contact))
     return shared_ptr<EndorseCertificate>();
@@ -501,11 +505,12 @@ ContactManager::generateEndorseCertificate(const Name& identity)
                                                           contact->getPublicKey(),
                                                           contact->getNotBefore(),
                                                           contact->getNotAfter(),
+                                                          signCert.getKeyId(),
                                                           signerKeyName,
                                                           contact->getProfile(),
                                                           endorseList));
   m_keyChain.sign(*cert,
-                  ndn::security::signingByIdentity(m_identity)
+                  ndn::security::signingByKey(signKey)
                     .setSignatureInfo(cert->getSignatureInfo()));
   return cert;
 
