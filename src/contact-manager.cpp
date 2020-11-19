@@ -514,7 +514,7 @@ ContactManager::generateEndorseCertificate(const Name& identity)
 void
 ContactManager::publishEndorseCertificateInDNS(const EndorseCertificate& endorseCertificate)
 {
-  Name endorsee = endorseCertificate.getKeyName().getPrefix(-1);
+  Name endorsee = endorseCertificate.getKeyName().getPrefix(-2);
   Name dnsName = m_identity;
   dnsName.append("DNS")
     .append(endorsee.wireEncode())

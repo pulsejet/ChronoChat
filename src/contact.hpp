@@ -38,7 +38,7 @@ public:
     m_institution = m_profile.get("institution");
 
     m_keyName = identityCertificate.getKeyName();
-    m_namespace = m_keyName.getPrefix(-1);
+    m_namespace = m_keyName.getPrefix(-2);
     m_publicKey = identityCertificate.getPublicKey();
 
     try {
@@ -61,7 +61,7 @@ public:
     m_institution = m_profile.get("institution");
 
     m_keyName = endorseCertificate.getKeyName();;
-    m_namespace = m_keyName.getPrefix(-1);
+    m_namespace = m_keyName.getPrefix(-2);
     m_publicKey = endorseCertificate.getPublicKey();
 
     try {
