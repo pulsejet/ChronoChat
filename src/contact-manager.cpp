@@ -386,7 +386,10 @@ ContactManager::publishCollectEndorsedDataInDNS()
   m_contactStorage->getCollectEndorse(endorseCollection);
 
   data->setContent(endorseCollection.wireEncode());
-  m_keyChain.sign(*data, ndn::security::signingByIdentity(m_identity));
+
+  auto signIdentity = m_keyChain.createIdentity(m_identity);
+  auto signKey = m_keyChain.createKey(signIdentity);
+  m_keyChain.sign(*data, ndn::security::signingByKey(signKey));
 
   m_contactStorage->updateDnsOthersEndorse(*data);
   m_face.put(*data);
@@ -476,9 +479,9 @@ ContactManager::publishSelfEndorseCertificateInDNS(const EndorseCertificate& sel
   data->setContent(selfEndorseCertificate.wireEncode());
   data->setFreshnessPeriod(time::milliseconds(1000));
 
-  m_keyChain.sign(*data,
-                  ndn::security::signingByIdentity(m_identity)
-                    .setSignatureInfo(selfEndorseCertificate.getSignatureInfo()));
+  auto signIdentity = m_keyChain.createIdentity(m_identity);
+  auto signKey = m_keyChain.createKey(signIdentity);
+  m_keyChain.sign(*data, ndn::security::signingByKey(signKey));
 
   m_contactStorage->updateDnsSelfProfileData(*data);
   m_face.put(*data);
@@ -530,9 +533,9 @@ ContactManager::publishEndorseCertificateInDNS(const EndorseCertificate& endorse
   data->setName(dnsName);
   data->setContent(endorseCertificate.wireEncode());
 
-  m_keyChain.sign(*data,
-                  ndn::security::signingByIdentity(m_identity)
-                    .setSignatureInfo(endorseCertificate.getSignatureInfo()));
+  auto signIdentity = m_keyChain.createIdentity(m_identity);
+  auto signKey = m_keyChain.createKey(signIdentity);
+  m_keyChain.sign(*data, ndn::security::signingByKey(signKey));
 
   m_contactStorage->updateDnsEndorseOthers(*data, dnsName.get(-3).toUri());
   m_face.put(*data);
