@@ -278,7 +278,7 @@ ContactStorage::updateCollectEndorse(const EndorseCertificate& endorseCertificat
   sqlite3_prepare_v2(m_db,
                      "INSERT OR REPLACE INTO CollectEndorse \
                       (endorser, endorse_name, endorse_data) \
-                      VALUES (?, ?, ?, ?)",
+                      VALUES (?, ?, ?)",
                      -1, &stmt, 0);
   sqlite3_bind_string(stmt, 1, endorserName.toUri(), SQLITE_TRANSIENT);
   sqlite3_bind_string(stmt, 2, certName.toUri(), SQLITE_TRANSIENT);
