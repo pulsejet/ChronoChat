@@ -113,6 +113,7 @@ ContactManager::fetchCollectEndorse(const Name& identity)
 
   Interest interest(interestName);
   interest.setInterestLifetime(time::milliseconds(1000));
+  interest.setCanBePrefix(true);
   interest.setMustBeFresh(true);
 
   ndn::security::v2::DataValidationSuccessCallback onValidated =
