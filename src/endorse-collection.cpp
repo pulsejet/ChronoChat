@@ -85,6 +85,11 @@ EndorseCollection::wireDecode(const Block& endorseWire)
   m_wire.parse();
   m_entries.clear();
 
+  if (m_wire.type() == tlv::Content) {
+    m_wire = m_wire.elements().at(0);
+    m_wire.parse();
+  }
+
   if (m_wire.type() != tlv::EndorseCollection)
     throw Error("Unexpected TLV number when decoding endorse collection packet");
 
