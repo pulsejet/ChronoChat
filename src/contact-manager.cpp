@@ -256,7 +256,7 @@ ContactManager::onDnsCollectEndorseValidated(const Data& data,
 {
   try {
     shared_ptr<EndorseCollection> endorseCollection =
-      make_shared<EndorseCollection>(data.getContent());
+      make_shared<EndorseCollection>(data.getContent().blockFromValue());
     m_bufferedContacts[identity].m_endorseCollection = endorseCollection;
     fetchEndorseCertificateInternal(identity, 0);
   }
