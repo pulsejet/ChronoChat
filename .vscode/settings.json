@@ -1,5 +1,6 @@
 {
     "files.associations": {
-        "qmodelindex": "cpp"
+        "qmodelindex": "cpp",
+        "functional": "cpp"
     }
 }
