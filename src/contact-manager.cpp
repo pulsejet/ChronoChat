@@ -284,7 +284,8 @@ ContactManager::collectEndorsement()
       interest.setMustBeFresh(true);
       interest.setInterestLifetime(time::milliseconds(1000));
 
-      ndn::security::v2::DataValidationSuccessCallback onValidated = bind(&ContactManager::onDnsEndorseeValidated, this, _1);
+      ndn::security::v2::DataValidationSuccessCallback onValidated =
+        bind(&ContactManager::onDnsEndorseeValidated, this, _1);
       ndn::security::v2::DataValidationFailureCallback onValidationFailed =
         bind(&ContactManager::onDnsEndorseeValidationFailed, this, _1, _2);
       TimeoutNotify timeoutNotify = bind(&ContactManager::onDnsEndorseeTimeoutNotify, this, _1);
@@ -475,7 +476,7 @@ ContactManager::generateEndorseCertificate(const Name& identity)
 void
 ContactManager::publishEndorseCertificateInDNS(const EndorseCertificate& endorseCertificate)
 {
-  Name endorsee = endorseCertificate.getKeyName().getPrefix(-2);
+  Name endorsee = endorseCertificate.getKeyName().getPrefix(-4);
   Name dnsName = m_identity;
   dnsName.append("DNS")
     .append(endorsee.wireEncode())
@@ -568,6 +569,15 @@ ContactManager::onKeyInterest(const Name& prefix, const Interest& interest)
   const Name& interestName = interest.getName();
   shared_ptr<Certificate> data;
 
+  try {
+    ndn::security::v2::Certificate cert = m_keyChain.getPib()
+                                                    .getIdentity(m_identity)
+                                                    .getDefaultKey()
+                                                    .getDefaultCertificate();
+    if (cert.getKeyName() == interestName)
+      return m_face.put(cert);
+  } catch (ndn::security::Pib::Error&) {}
+
   data = m_contactStorage->getSelfEndorseCertificate();
   if (static_cast<bool>(data) && data->getKeyName().equals(interestName))
     return m_face.put(*data);
@@ -589,19 +599,22 @@ ContactManager::onIdentityUpdated(const QString& identity)
   dnsPrefix.append(m_identity).append("DNS");
   auto dnsListenerId = make_shared<ndn::RegisteredPrefixHandle>(
     m_face.setInterestFilter(dnsPrefix,
-                             bind(&ContactManager::onDnsInterest,
-                                  this, _1, _2),
-                             bind(&ContactManager::onDnsRegisterFailed,
-                                  this, _1, _2)));
+                             bind(&ContactManager::onDnsInterest, this, _1, _2),
+                             bind(&ContactManager::onDnsRegisterFailed, this, _1, _2)));
 
   Name keyPrefix;
   keyPrefix.append(m_identity).append("KEY");
   auto keyListenerId = make_shared<ndn::RegisteredPrefixHandle>(
     m_face.setInterestFilter(keyPrefix,
-                             bind(&ContactManager::onKeyInterest,
-                                  this, _1, _2),
-                             bind(&ContactManager::onDnsRegisterFailed,
-                                  this, _1, _2)));
+                             bind(&ContactManager::onKeyInterest, this, _1, _2),
+                             bind(&ContactManager::onDnsRegisterFailed, this, _1, _2)));
+
+  Name profileCertPrefix;
+  profileCertPrefix.append(m_identity).append("PROFILE-CERT");
+  auto profileCertListenerId = make_shared<ndn::RegisteredPrefixHandle>(
+    m_face.setInterestFilter(profileCertPrefix,
+                             bind(&ContactManager::onKeyInterest, this, _1, _2),
+                             bind(&ContactManager::onDnsRegisterFailed, this, _1, _2)));
 
   if (m_dnsListenerId != 0)
     m_dnsListenerId->unregister();
@@ -609,7 +622,11 @@ ContactManager::onIdentityUpdated(const QString& identity)
 
   if (m_keyListenerId != 0)
     m_keyListenerId->unregister();
-  m_keyListenerId = dnsListenerId;
+  m_keyListenerId = keyListenerId;
+
+  if (m_profileCertListenerId != 0)
+    m_profileCertListenerId->unregister();
+  m_profileCertListenerId = profileCertListenerId;
 
   m_contactList.clear();
   m_contactStorage->getAllContacts(m_contactList);

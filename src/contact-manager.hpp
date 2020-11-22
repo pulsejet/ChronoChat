@@ -285,6 +285,7 @@ private:
   // Tmp Dns
   shared_ptr<ndn::RegisteredPrefixHandle> m_dnsListenerId;
   shared_ptr<ndn::RegisteredPrefixHandle> m_keyListenerId;
+  shared_ptr<ndn::RegisteredPrefixHandle> m_profileCertListenerId;
 
   RecLock m_collectCountMutex;
   size_t m_collectCount;

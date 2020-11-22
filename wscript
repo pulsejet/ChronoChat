@@ -81,7 +81,7 @@ def build (bld):
           )
 
     # Debug tools
-    if bld.env["_DEBUG"] and False:
+    if bld.env["_DEBUG"]:
         for app in bld.path.ant_glob('debug-tools/*.cc'):
             bld(features=['cxx', 'cxxprogram'],
                 target = '%s' % (str(app.change_ext('','.cc'))),

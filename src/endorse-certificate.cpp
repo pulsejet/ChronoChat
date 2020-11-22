@@ -53,14 +53,20 @@ EndorseCertificate::EndorseCertificate(const Certificate& kskCertificate,
   , m_profile(profile)
   , m_endorseList(endorseList)
 {
-  setName(kskCertificate.getName());
-  m_signer = getKeyName();
+  setName(kskCertificate.getKeyName().getPrefix(-2)
+                        .append("PROFILE-CERT")
+                        .append("KEY")
+                        .append(kskCertificate.getKeyId())
+                        .append("self")
+                        .appendTimestamp());
+
+  m_signer = kskCertificate.getKeyName();
 
   setMetaInfo(kskCertificate.getMetaInfo());
   setContent(kskCertificate.getPublicKey().data(), kskCertificate.getPublicKey().size());
 
   ndn::security::v2::AdditionalDescription description;
-  description.set("2.5.4.41", getName().toUri());
+  description.set("2.5.4.41", getKeyName().toUri());
   description.set("signer", m_signer.toUri());
 
   EndorseExtension endorseExtension;
@@ -93,7 +99,7 @@ EndorseCertificate::EndorseCertificate(const EndorseCertificate& endorseCertific
 {
   setName(endorseCertificate.getName()
                  .getPrefix(-2)
-                 .append(m_signer.getSubName(-1))
+                 .append(m_signer.wireEncode())
                  .appendVersion());
 
   setMetaInfo(endorseCertificate.getMetaInfo());
@@ -136,9 +142,11 @@ EndorseCertificate::EndorseCertificate(const Name& keyName,
   , m_profile(profile)
   , m_endorseList(endorseList)
 {
-  setName(keyName.getPrefix(-1)
+  setName(keyName.getPrefix(-2)
+                 .append("PROFILE-CERT")
+                 .append("KEY")
                  .append(signerKeyId)
-                 .append(m_signer.getSubName(-1))
+                 .append(m_signer.wireEncode())
                  .appendVersion());
 
   setContent(key.data(), key.size());

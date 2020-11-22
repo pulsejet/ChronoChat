@@ -57,8 +57,8 @@ public:
   {
     m_profile = endorseCertificate.getProfile();
 
-    m_keyName = endorseCertificate.getKeyName();
-    m_namespace = m_keyName.getPrefix(-2);
+    m_keyName = endorseCertificate.getKeyName().getPrefix(-1).append("KEY");
+    m_namespace = m_keyName.getPrefix(-3);
     m_publicKey = endorseCertificate.getPublicKey();
 
     m_name = m_profile.get("name");
