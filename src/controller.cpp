@@ -323,9 +323,15 @@ Controller::loadConf()
       m_nick = m_identity.get(-1).toUri();
   }
   catch (tlv::Error&) {
-    m_identity.clear();
-    m_identity.append("chronochat-tmp-identity")
-              .append(getRandomString());
+    try {
+      ndn::KeyChain keyChain;
+      m_identity = keyChain.getPib().getDefaultIdentity().getName();
+    }
+    catch (ndn::security::pib::Pib::Error&) {
+      m_identity.clear();
+      m_identity.append("chronochat-tmp-identity")
+                .append(getRandomString());
+    }
     m_nick = m_identity.get(-1).toUri();
   }
 }
