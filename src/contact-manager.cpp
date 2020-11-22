@@ -141,7 +141,7 @@ ContactManager::fetchEndorseCertificateInternal(const Name& identity, size_t cer
 
   Interest interest(interestName);
   interest.setInterestLifetime(time::milliseconds(1000));
-  interest.setMustBeFresh(true);
+  interest.setMustBeFresh(false);
 
   m_face.expressInterest(interest,
                          bind(&ContactManager::onEndorseCertificateInternal,
@@ -605,6 +605,19 @@ ContactManager::onDnsRegisterFailed(const Name& prefix, const std::string& failI
   emit warning(QString(failInfo.c_str()));
 }
 
+void
+ContactManager::onKeyInterest(const Name& prefix, const Interest& interest)
+{
+  const Name& interestName = interest.getName();
+
+  shared_ptr<Data> data;
+
+  data = m_contactStorage->getCollectEndorseByName(interestName);
+  if (static_cast<bool>(data)) {
+    m_face.put(*data);
+    return;
+  }
+}
 
 // public slots
 void
@@ -627,10 +640,22 @@ ContactManager::onIdentityUpdated(const QString& identity)
                              bind(&ContactManager::onDnsRegisterFailed,
                                   this, _1, _2)));
 
+  Name keyPrefix;
+  keyPrefix.append(m_identity).append("KEY");
+  auto keyListenerId = make_shared<ndn::RegisteredPrefixHandle>(
+    m_face.setInterestFilter(keyPrefix,
+                             bind(&ContactManager::onKeyInterest,
+                                  this, _1, _2),
+                             bind(&ContactManager::onDnsRegisterFailed,
+                                  this, _1, _2)));
+
   if (m_dnsListenerId != 0)
     m_dnsListenerId->unregister();
-
   m_dnsListenerId = dnsListenerId;
+
+  if (m_keyListenerId != 0)
+    m_keyListenerId->unregister();
+  m_keyListenerId = dnsListenerId;
 
   m_contactList.clear();
   m_contactStorage->getAllContacts(m_contactList);

@@ -53,6 +53,9 @@ public:
   void
   getCollectEndorse(EndorseCollection& endorseCollection);
 
+  shared_ptr<EndorseCertificate>
+  getCollectEndorseByName(const Name& name);
+
   void
   getEndorseList(const Name& identity, std::vector<std::string>& endorseList);
 

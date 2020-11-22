@@ -183,6 +183,9 @@ private:
   void
   onDnsRegisterFailed(const Name& prefix, const std::string& failInfo);
 
+  void
+  onKeyInterest(const Name& prefix, const Interest& interest);
+
 signals:
   void
   contactEndorseInfoReady(const EndorseInfo& endorseInfo);
@@ -284,6 +287,7 @@ private:
 
   // Tmp Dns
   shared_ptr<ndn::RegisteredPrefixHandle> m_dnsListenerId;
+  shared_ptr<ndn::RegisteredPrefixHandle> m_keyListenerId;
 
   RecLock m_collectCountMutex;
   size_t m_collectCount;

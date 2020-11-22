@@ -310,6 +310,27 @@ ContactStorage::getCollectEndorse(EndorseCollection& endorseCollection)
   sqlite3_finalize(stmt);
 }
 
+shared_ptr<EndorseCertificate>
+ContactStorage::getCollectEndorseByName(const Name& name)
+{
+  shared_ptr<EndorseCertificate> cert;
+
+  sqlite3_stmt *stmt;
+  sqlite3_prepare_v2(m_db,
+                     "SELECT endorse_name, endorse_data FROM CollectEndorse where endorse_name=?",
+                      -1, &stmt, 0);
+  sqlite3_bind_string(stmt, 1, name.toUri(), SQLITE_TRANSIENT);
+
+  if (sqlite3_step(stmt) == SQLITE_ROW) {
+    cert = make_shared<EndorseCertificate>();
+    cert->wireDecode(sqlite3_column_block(stmt, 1));
+  }
+
+  sqlite3_finalize(stmt);
+
+  return cert;
+}
+
 void
 ContactStorage::getEndorseList(const Name& identity, vector<string>& endorseList)
 {
