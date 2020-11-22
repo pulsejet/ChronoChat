@@ -78,7 +78,6 @@ def build (bld):
           use = 'BOOST ChronoChat',
           includes = "src .",
           install_path = None,
-          defines = 'TEST_CERT_PATH=\"%s/cert-test\"' %(bld.bldnode),
           )
 
     # Debug tools

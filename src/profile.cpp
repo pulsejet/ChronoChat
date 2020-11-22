@@ -32,7 +32,7 @@ Profile::Profile(const Certificate& identityCertificate)
 {
   Name keyName = identityCertificate.getKeyName();
 
-  m_entries[string("IDENTITY")] = keyName.getPrefix(-1).toUri();
+  m_entries[string("IDENTITY")] = keyName.getPrefix(-2).toUri();
 
   auto additionalWire = identityCertificate.getSignatureInfo().getCustomTlv(tlv::AdditionalDescription);
   if (additionalWire) {
