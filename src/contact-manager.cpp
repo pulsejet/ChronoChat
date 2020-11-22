@@ -661,6 +661,7 @@ ContactManager::onIdentityUpdated(const QString& identity)
   m_contactStorage->getAllContacts(m_contactList);
 
   m_bufferedContacts.clear();
+  onWaitForContactList();
 
   collectEndorsement();
 }
