@@ -739,6 +739,9 @@ ContactManager::onUpdateProfile()
 void
 ContactManager::onRefreshBrowseContact()
 {
+  return;
+
+  // The following no longer works as we don't serve such a list anymore
   vector<string> bufferedIdCertNames;
   try {
     using namespace boost::asio::ip;
