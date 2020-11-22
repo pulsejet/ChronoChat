@@ -695,6 +695,7 @@ ContactManager::onRefreshBrowseContact()
 {
   return;
 
+#if 0
   // The following no longer works as we don't serve such a list anymore
   vector<string> bufferedIdCertNames;
   try {
@@ -780,6 +781,7 @@ ContactManager::onRefreshBrowseContact()
 
     sendInterest(interest, onValidated, onValidationFailed, timeoutNotify, 0);
   }
+#endif
 }
 
 void
