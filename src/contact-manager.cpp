@@ -132,10 +132,8 @@ ContactManager::fetchEndorseCertificateInternal(const Name& identity, size_t cer
   shared_ptr<EndorseCollection> endorseCollection =
     m_bufferedContacts[identity].m_endorseCollection;
 
-  if(certIndex >= endorseCollection->getCollectionEntries().size()) {
-    prepareEndorseInfo(identity);
-    return;
-  }
+  if(certIndex >= endorseCollection->getCollectionEntries().size())
+    return prepareEndorseInfo(identity);
 
   Name interestName(endorseCollection->getCollectionEntries()[certIndex].certName);
 
