@@ -614,7 +614,7 @@ ContactStorage::getDnsData(const Name& dataName)
   if (sqlite3_step(stmt) == SQLITE_ROW) {
     data = make_shared<Data>();
     data->wireDecode(sqlite3_column_block(stmt, 0));
-    data->setFreshnessPeriod(time::milliseconds(500));
+    data->setFreshnessPeriod(time::milliseconds(1000));
   }
   sqlite3_finalize(stmt);
 
@@ -635,7 +635,7 @@ ContactStorage::getDnsData(const string& name, const string& type)
   if (sqlite3_step(stmt) == SQLITE_ROW) {
     data = make_shared<Data>();
     data->wireDecode(sqlite3_column_block(stmt, 0));
-    data->setFreshnessPeriod(time::milliseconds(800));
+    data->setFreshnessPeriod(time::milliseconds(1000));
   }
   sqlite3_finalize(stmt);
 
