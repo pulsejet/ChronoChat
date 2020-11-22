@@ -177,7 +177,7 @@ ContactManager::prepareEndorseInfo(const Name& identity)
     m_bufferedContacts[identity].m_endorseCertList.end();
 
   for (; cIt != cEnd; cIt++, endorseCertCount++) {
-    shared_ptr<Contact> contact = getContact((*cIt)->getSigner().getPrefix(-1));
+    shared_ptr<Contact> contact = getContact((*cIt)->getSigner());
     if (!static_cast<bool>(contact))
       continue;
 
