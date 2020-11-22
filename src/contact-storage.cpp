@@ -252,6 +252,27 @@ ContactStorage::addSelfEndorseCertificate(const EndorseCertificate& newEndorseCe
   sqlite3_finalize(stmt);
 }
 
+shared_ptr<EndorseCertificate>
+ContactStorage::getSelfEndorseCertificate()
+{
+  shared_ptr<EndorseCertificate> cert;
+
+  sqlite3_stmt *stmt;
+  sqlite3_prepare_v2(m_db,
+                     "SELECT endorse_data FROM SelfEndorse where identity=?",
+                      -1, &stmt, 0);
+  sqlite3_bind_string(stmt, 1, m_identity.toUri(), SQLITE_TRANSIENT);
+
+  if (sqlite3_step(stmt) == SQLITE_ROW) {
+    cert = make_shared<EndorseCertificate>();
+    cert->wireDecode(sqlite3_column_block(stmt, 0));
+  }
+
+  sqlite3_finalize(stmt);
+
+  return cert;
+}
+
 void
 ContactStorage::addEndorseCertificate(const EndorseCertificate& endorseCertificate,
                                       const Name& identity)

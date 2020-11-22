@@ -44,6 +44,9 @@ public:
   void
   addSelfEndorseCertificate(const EndorseCertificate& endorseCertificate);
 
+  shared_ptr<EndorseCertificate>
+  getSelfEndorseCertificate();
+
   void
   addEndorseCertificate(const EndorseCertificate& endorseCertificate, const Name& identity);
 

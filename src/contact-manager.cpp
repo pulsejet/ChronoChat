@@ -608,14 +608,15 @@ void
 ContactManager::onKeyInterest(const Name& prefix, const Interest& interest)
 {
   const Name& interestName = interest.getName();
+  shared_ptr<Certificate> data;
 
-  shared_ptr<Data> data;
+  data = m_contactStorage->getSelfEndorseCertificate();
+  if (static_cast<bool>(data) && data->getKeyName().equals(interestName))
+    return m_face.put(*data);
 
   data = m_contactStorage->getCollectEndorseByName(interestName);
-  if (static_cast<bool>(data)) {
-    m_face.put(*data);
-    return;
-  }
+  if (static_cast<bool>(data))
+    return m_face.put(*data);
 }
 
 // public slots
