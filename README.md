@@ -56,9 +56,9 @@ Congratulations! build/ChronoChat.app is ready to use (on a Mac).
 
 2. Install ChronoChat dependencies
 
-        sudo apt-get install libprotobuf-dev protobuf-compiler libevent-dev
-        sudo apt-get install libboost1.48-all-dev
-        sudo apt-get install qt4-dev-tools
+        sudo apt-get install libprotobuf-dev protobuf-compiler libevent-dev libcrypto++-dev
+        sudo apt-get install libboost-dev
+        sudo apt-get install libqt5core5a libqt5gui5 libqt5widgets5 libqt5sql5-sqlite
 
 3. Fetch source code with submodules
 
@@ -82,4 +82,4 @@ If you already cloned repository, you can update submodules this way:
         ./waf configure
         ./waf
 
-Congratulations! build/ChronoChat is ready to use.  Do not forget to start ccnd and configure FIB before using ChronoChat.
+Congratulations! build/ChronoChat is ready to use.  Do not forget to start nfd and configure FIB before using ChronoChat.
