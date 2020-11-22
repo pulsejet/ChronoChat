@@ -20,6 +20,6 @@ if has Ubuntu $NODE_LABELS; then
     sudo apt-get -qq -y install libssl-dev libsqlite3-dev
 
     sudo apt-get -qq -y install libprotobuf-dev protobuf-compiler libevent-dev libcrypto++-dev
-    sudo apt-get -qq -y install libboost-dev
+    sudo apt-get -qq -y install libboost-all-dev
     sudo apt-get -qq -y install libqt5core5a libqt5gui5 libqt5widgets5 libqt5sql5-sqlite
 fi
