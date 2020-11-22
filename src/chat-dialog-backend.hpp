@@ -62,9 +62,6 @@ private:
   void
   initializeSync();
 
-  shared_ptr<ndn::security::v2::Certificate>
-  loadTrustAnchor();
-
   void
   exitChatroom();
 

@@ -159,19 +159,6 @@ private:
   QIODevice& m_source;
 };
 
-shared_ptr<ndn::security::v2::Certificate>
-ChatDialogBackend::loadTrustAnchor()
-{
-  QFile anchorFile(":/security/anchor.cert");
-
-  if (!anchorFile.open(QIODevice::ReadOnly)) {
-    return {};
-  }
-
-  boost::iostreams::stream<IoDeviceSource> anchorFileStream(anchorFile);
-  return ndn::io::load<ndn::security::v2::Certificate>(anchorFileStream);
-}
-
 void
 ChatDialogBackend::exitChatroom() {
   if (m_joined)

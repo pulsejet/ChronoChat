@@ -56,53 +56,11 @@ ContactManager::~ContactManager()
 {
 }
 
-// private methods
-shared_ptr<Certificate>
-ContactManager::loadTrustAnchor()
-{
-  shared_ptr<Certificate> anchor;
-  QFile anchorFile(":/security/anchor.cert");
-
-  if (!anchorFile.open(QIODevice::ReadOnly)) {
-    emit warning(QString("Cannot load trust anchor!"));
-    return anchor;
-  }
-
-  qint64 fileSize = anchorFile.size();
-  char* buf = new char[fileSize];
-  anchorFile.read(buf, fileSize);
-
-  try {
-    using namespace CryptoPP;
-
-    OBufferStream os;
-    StringSource(reinterpret_cast<const uint8_t*>(buf), fileSize, true,
-                 new Base64Decoder(new FileSink(os)));
-    anchor = make_shared<Certificate>();
-    anchor->wireDecode(Block(os.buf()));
-  }
-  catch (CryptoPP::Exception& e) {
-    emit warning(QString("Cannot load trust anchor!"));
-  }
-  catch (Certificate::Error& e) {
-    emit warning(QString("Cannot load trust anchor!"));
-  }
-  catch(Block::Error& e) {
-    emit warning(QString("Cannot load trust anchor!"));
-  }
-
-  delete [] buf;
-
-  return anchor;
-}
-
 void
 ContactManager::initializeSecurity()
 {
-  shared_ptr<Certificate> anchor = loadTrustAnchor();
-
-  // TODO: use custom policy here
-  m_validator = make_shared<ndn::security::v2::ValidatorNull>();
+  m_validator = make_shared<ndn::security::ValidatorConfig>(m_face);
+  m_validator->load("security/validation-contact-manager.conf");
 }
 
 void

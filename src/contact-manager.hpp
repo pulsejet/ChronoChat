@@ -22,7 +22,7 @@
 #include "endorse-info.hpp"
 #include "endorse-collection.hpp"
 #include <ndn-cxx/security/key-chain.hpp>
-#include <ndn-cxx/security/validator.hpp>
+#include <ndn-cxx/security/validator-config.hpp>
 #include <ndn-cxx/face.hpp>
 #include <boost/thread/locks.hpp>
 #include <boost/thread/recursive_mutex.hpp>
@@ -55,9 +55,6 @@ public:
     contactList.insert(contactList.end(), m_contactList.begin(), m_contactList.end());
   }
 private:
-  shared_ptr<ndn::security::v2::Certificate>
-  loadTrustAnchor();
-
   void
   initializeSecurity();
 
@@ -275,7 +272,7 @@ private:
 
   // Conf
   shared_ptr<ContactStorage> m_contactStorage;
-  shared_ptr<ndn::security::v2::Validator> m_validator;
+  shared_ptr<ndn::security::ValidatorConfig> m_validator;
   ndn::Face& m_face;
   ndn::KeyChain m_keyChain;
   Name m_identity;
