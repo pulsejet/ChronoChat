@@ -15,7 +15,6 @@
 #include <ndn-cxx/util/concepts.hpp>
 #include <ndn-cxx/encoding/block.hpp>
 #include <ndn-cxx/encoding/encoding-buffer.hpp>
-#include <ndn-cxx/encoding/encoding-buffer-fwd.hpp>
 #include <boost/concept_check.hpp>
 
 namespace chronochat {
