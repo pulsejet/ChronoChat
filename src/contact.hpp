@@ -33,13 +33,14 @@ public:
     , m_isIntroducer(isIntroducer)
     , m_profile(identityCertificate)
   {
-    m_name = m_profile.get("name");
-    m_alias = alias.empty() ? m_name : alias;
-    m_institution = m_profile.get("institution");
-
     m_keyName = identityCertificate.getKeyName();
     m_namespace = m_keyName.getPrefix(-2);
     m_publicKey = identityCertificate.getPublicKey();
+
+    m_name = m_profile.get("name");
+    m_name = m_name.empty() ? m_namespace.toUri() : m_name;
+    m_alias = alias.empty() ? m_name : alias;
+    m_institution = m_profile.get("institution");
 
     try {
       m_notBefore = identityCertificate.getValidityPeriod().getPeriod().first;
@@ -56,13 +57,14 @@ public:
   {
     m_profile = endorseCertificate.getProfile();
 
-    m_name = m_profile.get("name");
-    m_alias = alias.empty() ? m_name : alias;
-    m_institution = m_profile.get("institution");
-
-    m_keyName = endorseCertificate.getKeyName();;
+    m_keyName = endorseCertificate.getKeyName();
     m_namespace = m_keyName.getPrefix(-2);
     m_publicKey = endorseCertificate.getPublicKey();
+
+    m_name = m_profile.get("name");
+    m_name = m_name.empty() ? m_namespace.toUri() : m_name;
+    m_alias = alias.empty() ? m_name : alias;
+    m_institution = m_profile.get("institution");
 
     try {
       m_notBefore = endorseCertificate.getValidityPeriod().getPeriod().first;
