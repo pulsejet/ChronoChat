@@ -185,8 +185,10 @@ ContactManager::prepareEndorseInfo(const Name& identity)
         !contact->canBeTrustedFor(profile.getIdentityName()))
       continue;
 
-    // if (!Validator::verifySignature(**cIt, contact->getPublicKey()))
     if (!(*cIt)->isValid())
+      continue;
+
+    if (!ndn::security::verifySignature(**cIt, contact->getPublicKey().data(), contact->getPublicKey().size()))
       continue;
 
     const vector<string>& endorseList = (*cIt)->getEndorseList();
