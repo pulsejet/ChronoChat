@@ -325,6 +325,7 @@ ContactManager::collectEndorsement()
       interestName.append("DNS").append(m_identity.wireEncode()).append("ENDORSEE");
 
       Interest interest(interestName);
+      interest.setMustBeFresh(true);
       interest.setInterestLifetime(time::milliseconds(1000));
 
       ndn::security::v2::DataValidationSuccessCallback onValidated = bind(&ContactManager::onDnsEndorseeValidated, this, _1);
