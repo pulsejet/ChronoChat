@@ -383,6 +383,7 @@ ContactManager::publishCollectEndorsedDataInDNS()
 
   shared_ptr<Data> data = make_shared<Data>();
   data->setName(dnsName);
+  data->setFreshnessPeriod(time::milliseconds(1000));
 
   EndorseCollection endorseCollection;
   m_contactStorage->getCollectEndorse(endorseCollection);
@@ -526,6 +527,7 @@ ContactManager::publishEndorseCertificateInDNS(const EndorseCertificate& endorse
   shared_ptr<Data> data = make_shared<Data>();
   data->setName(dnsName);
   data->setContent(endorseCertificate.wireEncode());
+  data->setFreshnessPeriod(time::milliseconds(1000));
 
   m_keyChain.sign(*data, ndn::security::signingByIdentity(m_identity));
 
