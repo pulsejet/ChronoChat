@@ -622,10 +622,6 @@ void
 ContactManager::onIdentityUpdated(const QString& identity)
 {
   m_identity = Name(identity.toStdString());
-  auto signIdentity = m_keyChain.createIdentity(m_identity);
-  auto signKey = m_keyChain.createKey(signIdentity);
-  m_keyChain.setDefaultIdentity(signIdentity);
-  m_keyChain.setDefaultKey(signIdentity, signKey);
 
   m_contactStorage = make_shared<ContactStorage>(m_identity);
 
