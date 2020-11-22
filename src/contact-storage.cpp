@@ -440,6 +440,9 @@ ContactStorage::getContact(const Name& identity) const
   }
   sqlite3_finalize(stmt);
 
+  if (!static_cast<bool>(contact))
+    return contact;
+
   sqlite3_prepare_v2(m_db,
                      "SELECT profile_type, profile_value FROM ContactProfile \
                       where profile_identity=?",
