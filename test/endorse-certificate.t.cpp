@@ -85,7 +85,7 @@ BOOST_AUTO_TEST_CASE(ConstructFromIdCert)
   BOOST_CHECK_EQUAL(decodedEndorse.getSigner(),
                     "/EndorseCertificateTests/KEY/6%C7%E3%06%EC%8CB%3D");
   BOOST_CHECK_EQUAL(decodedEndorse.getKeyName(),
-                    "/EndorseCertificateTests/KEY/6%C7%E3%06%EC%8CB%3D");
+                    "/EndorseCertificateTests/PROFILE-CERT/KEY/6%C7%E3%06%EC%8CB%3D");
 
   const std::string testIdKey = getTestFile("test/cert/testid.key");
   ndn::OBufferStream keyOs;
