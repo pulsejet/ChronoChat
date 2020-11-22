@@ -189,10 +189,6 @@ ContactManager::prepareEndorseInfo(const Name& identity)
     if (!(*cIt)->isValid())
       continue;
 
-    const Profile& tmpProfile = (*cIt)->getProfile();
-    if (tmpProfile != profile)
-      continue;
-
     const vector<string>& endorseList = (*cIt)->getEndorseList();
     for (vector<string>::const_iterator eIt = endorseList.begin(); eIt != endorseList.end(); eIt++)
       endorseCount[*eIt] += 1;
