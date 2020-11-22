@@ -13,7 +13,7 @@ jobs:
 
     strategy:
       matrix:
-        os: [Ubuntu-18.04]
+        os: [Ubuntu-18.04, Ubuntu-20.04]
 
     env:
       NODE_LABELS: "Linux Ubuntu ${{ matrix.os }}"

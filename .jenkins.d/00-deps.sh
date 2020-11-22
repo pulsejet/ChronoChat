@@ -22,6 +22,4 @@ if has Ubuntu $NODE_LABELS; then
     sudo apt-get -qq -y install libprotobuf-dev protobuf-compiler libevent-dev libcrypto++-dev
     sudo apt-get -qq -y install libboost-all-dev
     sudo apt-get -qq -y install qt5-default
-
-    ./waf --color=yes configure --debug --with-tests
 fi
