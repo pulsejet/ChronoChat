@@ -416,7 +416,6 @@ ChatroomDiscoveryBackend::onRespondChatroomInfoRequest(ChatroomInfo chatroomInfo
 void
 ChatroomDiscoveryBackend::onIdentityUpdated(const QString& identity)
 {
-  m_chatroomList.clear();
   m_identity = Name(identity.toStdString());
   m_userDiscoveryPrefix.clear();
   m_userDiscoveryPrefix.append(m_identity).append("CHRONOCHAT-DISCOVERYDATA");

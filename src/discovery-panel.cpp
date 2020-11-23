@@ -90,7 +90,6 @@ DiscoveryPanel::resetPanel()
 void
 DiscoveryPanel::onIdentityUpdated(const QString& identity)
 {
-  resetPanel();
 }
 
 void
