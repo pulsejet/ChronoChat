@@ -504,7 +504,8 @@ ContactManager::sendInterest(const Interest& interest,
   m_face.expressInterest(interest,
                          bind(&ContactManager::onTargetData,
                               this, _1, _2, onValidated, onValidationFailed),
-                         NULL,
+                         bind(&ContactManager::onTargetTimeout,
+                              this, _1, retry, onValidated, onValidationFailed, timeoutNotify),
                          bind(&ContactManager::onTargetTimeout,
                               this, _1, retry, onValidated, onValidationFailed, timeoutNotify));
 }
