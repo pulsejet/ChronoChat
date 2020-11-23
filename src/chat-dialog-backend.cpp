@@ -198,12 +198,8 @@ ChatDialogBackend::processSyncUpdate(const std::vector<chronosync::MissingDataIn
     if (updates[i].high - updates[i].low < 3) {
       for (chronosync::SeqNo seq = updates[i].low; seq <= updates[i].high; ++seq) {
         m_sock->fetchData(updates[i].session, seq,
-                          [this] (const ndn::Data& data) {
-                            this->processChatData(data, true, true);
-                          },
-                          [this] (const ndn::Data& data, const chronosync::ValidationError& error) {
-                            this->processChatData(data, true, false);
-                          },
+                          bind(&ChatDialogBackend::processChatData, this, _1, true, true),
+                          bind(&ChatDialogBackend::processChatData, this, _1, true, false),
                           [] (const ndn::Interest& interest) {},
                           2);
       }
@@ -211,12 +207,8 @@ ChatDialogBackend::processSyncUpdate(const std::vector<chronosync::MissingDataIn
     else {
       // There are too many msgs to fetch, let's just fetch the latest one
       m_sock->fetchData(updates[i].session, updates[i].high,
-                        [this] (const ndn::Data& data) {
-                          this->processChatData(data, false, true);
-                        },
-                        [this] (const ndn::Data& data, const chronosync::ValidationError& error) {
-                          this->processChatData(data, false, false);
-                        },
+                        bind(&ChatDialogBackend::processChatData, this, _1, true, true),
+                        bind(&ChatDialogBackend::processChatData, this, _1, true, false),
                         [] (const ndn::Interest& interest) {},
                         2);
     }

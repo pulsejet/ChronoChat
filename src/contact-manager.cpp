@@ -103,9 +103,8 @@ ContactManager::fetchEndorseCertificateInternal(const Name& identity, size_t cer
                          bind(&ContactManager::onEndorseCertificateInternal,
                               this, _1, _2, identity, certIndex,
                               endorseCollection->getCollectionEntries()[certIndex].hash),
-                         [&] (const Interest& interest, const ndn::lp::Nack& nack) {
-                            onEndorseCertificateInternalTimeout(interest, identity, certIndex);
-                         },
+                         bind(&ContactManager::onEndorseCertificateInternalTimeout,
+                              this, _1, identity, certIndex),
                          bind(&ContactManager::onEndorseCertificateInternalTimeout,
                               this, _1, identity, certIndex));
 }
