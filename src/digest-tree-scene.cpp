@@ -16,7 +16,6 @@
 
 #ifndef Q_MOC_RUN
 #include <vector>
-#include <iostream>
 #include <assert.h>
 #include <boost/lexical_cast.hpp>
 #include <memory>

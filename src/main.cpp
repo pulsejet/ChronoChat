@@ -12,9 +12,9 @@
 #include <QTextCodec>
 
 #include "controller.hpp"
+#include <iostream>
 #include <ndn-cxx/face.hpp>
 #include <boost/thread/thread.hpp>
-#include <iostream>
 
 class NewApp : public QApplication
 {

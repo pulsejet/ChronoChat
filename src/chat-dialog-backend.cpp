@@ -17,7 +17,6 @@
 #include <boost/iostreams/stream.hpp>
 #include <ndn-cxx/util/io.hpp>
 #include "cryptopp.hpp"
-#include <iostream>
 #endif
 
 using namespace CryptoPP;

@@ -34,8 +34,6 @@ ControllerBackend::ControllerBackend(QObject* parent)
   : QThread(parent)
   , m_shouldResume(false)
   , m_contactManager(m_face)
-  , m_invitationListenerId(0)
-  , m_requestListenerId(0)
 {
   // connection to contact manager
   connect(this, SIGNAL(identityUpdated(const QString&)),

@@ -573,9 +573,9 @@ ContactManager::onKeyInterest(const Name& prefix, const Interest& interest)
 
   try {
     ndn::security::Certificate cert = m_keyChain.getPib()
-                                                    .getIdentity(m_identity)
-                                                    .getDefaultKey()
-                                                    .getDefaultCertificate();
+                                                .getIdentity(m_identity)
+                                                .getDefaultKey()
+                                                .getDefaultCertificate();
     if (cert.getKeyName() == interestName)
       return m_face.put(cert);
   } catch (ndn::security::Pib::Error&) {}
