@@ -421,13 +421,6 @@ ChatroomDiscoveryBackend::onIdentityUpdated(const QString& identity)
   m_userDiscoveryPrefix.clear();
   m_userDiscoveryPrefix.append(m_identity).append("CHRONOCHAT-DISCOVERYDATA");
   updatePrefixes();
-
-  {
-    std::lock_guard<std::mutex>lock(m_resumeMutex);
-    m_shouldResume = true;
-  }
-
-  m_face->getIoService().stop();
 }
 
 void
