@@ -44,7 +44,7 @@ ControllerBackend::ControllerBackend(QObject* parent)
   connect(&m_contactManager, SIGNAL(contactIdListReady(const QStringList&)),
           this, SLOT(onContactIdListReady(const QStringList&)));
 
-  m_validator = make_shared<ndn::security::v2::ValidatorNull>();
+  m_validator = make_shared<ndn::security::ValidatorNull>();
 }
 
 ControllerBackend::~ControllerBackend()
@@ -258,7 +258,7 @@ ControllerBackend::onInvitationValidated(const Interest& interest)
 
 void
 ControllerBackend::onInvitationValidationFailed(const Interest& interest,
-                                                const ndn::security::v2::ValidationError& failureInfo)
+                                                const ndn::security::ValidationError& failureInfo)
 {
   // _LOG_DEBUG("Invitation: " << interest->getName() <<
   //            " cannot not be validated due to: " << failureInfo);
@@ -409,7 +409,7 @@ void
 ControllerBackend::onInvitationResponded(const ndn::Name& invitationName, bool accepted)
 {
   shared_ptr<Data> response = make_shared<Data>();
-  shared_ptr<ndn::security::v2::Certificate> chatroomCert;
+  shared_ptr<ndn::security::Certificate> chatroomCert;
 
   // generate reply;
   if (accepted) {
@@ -420,7 +420,7 @@ ControllerBackend::onInvitationResponded(const ndn::Name& invitationName, bool a
 
     // We should create a particular certificate for this chatroom,
     //but let's use default one for now.
-    chatroomCert = make_shared<ndn::security::v2::Certificate>(
+    chatroomCert = make_shared<ndn::security::Certificate>(
       m_keyChain.createIdentity(m_identity).getDefaultKey().getDefaultCertificate());
 
     response->setContent(chatroomCert->wireEncode());

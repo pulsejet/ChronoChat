@@ -74,7 +74,7 @@ private:
 
   void
   onDnsSelfEndorseCertValidationFailed(const Data& selfEndorseCertificate,
-                                       const ndn::security::v2::ValidationError& error,
+                                       const ndn::security::ValidationError& error,
                                        const Name& identity);
 
   void
@@ -86,7 +86,7 @@ private:
 
   void
   onDnsCollectEndorseValidationFailed(const Data& data,
-                                      const ndn::security::v2::ValidationError& error,
+                                      const ndn::security::ValidationError& error,
                                       const Name& identity);
 
   void
@@ -113,7 +113,7 @@ private:
 
   void
   onDnsEndorseeValidationFailed(const Data& data,
-                                const ndn::security::v2::ValidationError& error);
+                                const ndn::security::ValidationError& error);
 
   void
   onDnsEndorseeTimeoutNotify(const Interest& interest);
@@ -130,7 +130,7 @@ private:
 
   void
   onIdentityCertValidationFailed(const Data& data,
-                                 const ndn::security::v2::ValidationError& error);
+                                 const ndn::security::ValidationError& error);
 
   void
   onIdentityCertTimeoutNotify(const Interest& interest);
@@ -155,22 +155,22 @@ private:
   // Communication
   void
   sendInterest(const Interest& interest,
-               const ndn::security::v2::DataValidationSuccessCallback& onValidated,
-               const ndn::security::v2::DataValidationFailureCallback& onValidationFailed,
+               const ndn::security::DataValidationSuccessCallback& onValidated,
+               const ndn::security::DataValidationFailureCallback& onValidationFailed,
                const TimeoutNotify& timeoutNotify,
                int retry = 1);
 
   void
   onTargetData(const Interest& interest,
                const Data& data,
-               const ndn::security::v2::DataValidationSuccessCallback& onValidated,
-               const ndn::security::v2::DataValidationFailureCallback& onValidationFailed);
+               const ndn::security::DataValidationSuccessCallback& onValidated,
+               const ndn::security::DataValidationFailureCallback& onValidationFailed);
 
   void
   onTargetTimeout(const Interest& interest,
                   int retry,
-                  const ndn::security::v2::DataValidationSuccessCallback& onValidated,
-                  const ndn::security::v2::DataValidationFailureCallback& onValidationFailed,
+                  const ndn::security::DataValidationSuccessCallback& onValidated,
+                  const ndn::security::DataValidationFailureCallback& onValidationFailed,
                   const TimeoutNotify& timeoutNotify);
 
   // DNS listener
@@ -197,7 +197,7 @@ signals:
   nameListReady(const QStringList& certNameList);
 
   void
-  idCertReady(const ndn::security::v2::Certificate& idCert);
+  idCertReady(const ndn::security::Certificate& idCert);
 
   void
   contactAliasListReady(const QStringList& aliasList);
@@ -265,7 +265,7 @@ private:
   };
 
   typedef std::map<Name, FetchedInfo> BufferedContacts;
-  typedef std::map<Name, shared_ptr<ndn::security::v2::Certificate> > BufferedIdCerts;
+  typedef std::map<Name, shared_ptr<ndn::security::Certificate> > BufferedIdCerts;
 
   typedef boost::recursive_mutex RecLock;
   typedef boost::unique_lock<RecLock> UniqueRecLock;

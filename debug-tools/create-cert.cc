@@ -11,7 +11,7 @@
 #include <iostream>
 
 using namespace ndn;
-using ndn::security::v2::Certificate;
+using ndn::security::Certificate;
 using ndn::security::pib::Identity;
 using ndn::security::pib::Key;
 

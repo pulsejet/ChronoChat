@@ -22,7 +22,7 @@ namespace chronochat {
 using std::vector;
 using std::string;
 
-using ndn::security::v2::Certificate;
+using ndn::security::Certificate;
 using ndn::OBufferStream;
 
 const vector<string> EndorseCertificate::DEFAULT_ENDORSE_LIST;
@@ -65,7 +65,7 @@ EndorseCertificate::EndorseCertificate(const Certificate& kskCertificate,
   setMetaInfo(kskCertificate.getMetaInfo());
   setContent(kskCertificate.getPublicKey().data(), kskCertificate.getPublicKey().size());
 
-  ndn::security::v2::AdditionalDescription description;
+  ndn::security::AdditionalDescription description;
   description.set("2.5.4.41", getKeyName().toUri());
   description.set("signer", m_signer.toUri());
 
@@ -105,7 +105,7 @@ EndorseCertificate::EndorseCertificate(const EndorseCertificate& endorseCertific
   setMetaInfo(endorseCertificate.getMetaInfo());
   setContent(endorseCertificate.getPublicKey().data(), endorseCertificate.getPublicKey().size());
 
-  ndn::security::v2::AdditionalDescription description;
+  ndn::security::AdditionalDescription description;
   description.set("2.5.4.41", getKeyName().toUri());
   description.set("signer", m_signer.toUri());
 
@@ -151,7 +151,7 @@ EndorseCertificate::EndorseCertificate(const Name& keyName,
 
   setContent(key.data(), key.size());
 
-  ndn::security::v2::AdditionalDescription description;
+  ndn::security::AdditionalDescription description;
   description.set("2.5.4.41", keyName.toUri());
   description.set("signer", m_signer.toUri());
 
@@ -184,7 +184,7 @@ EndorseCertificate::EndorseCertificate(const Data& data)
 
   auto additionalWire = getSignatureInfo().getCustomTlv(tlv::AdditionalDescription);
   if (additionalWire) {
-    ndn::security::v2::AdditionalDescription additional(*additionalWire);
+    ndn::security::AdditionalDescription additional(*additionalWire);
     m_signer = additional.get("signer");
   }
 

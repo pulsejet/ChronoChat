@@ -25,7 +25,7 @@ public:
   typedef std::map<Name, shared_ptr<ndn::Regex> >::const_iterator const_iterator;
   typedef std::map<Name, shared_ptr<ndn::Regex> >::iterator iterator;
 
-  Contact(const ndn::security::v2::Certificate& identityCertificate,
+  Contact(const ndn::security::Certificate& identityCertificate,
           bool isIntroducer = false,
           const std::string& alias = "")
     : m_notBefore(time::system_clock::now())

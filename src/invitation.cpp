@@ -18,7 +18,7 @@ namespace chronochat {
 
 using std::string;
 
-using ndn::security::v2::Certificate;
+using ndn::security::Certificate;
 
 const size_t  Invitation::NAME_SIZE_MIN         = 7;
 const ssize_t Invitation::SIGNATURE             = -1;

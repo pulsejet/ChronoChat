@@ -61,7 +61,7 @@ public slots:
   onNameListReady(const QStringList& nameList);
 
   void
-  onIdCertReady(const ndn::security::v2::Certificate & idCert);
+  onIdCertReady(const ndn::security::Certificate & idCert);
 
 signals:
   void

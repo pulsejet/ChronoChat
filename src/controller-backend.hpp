@@ -78,7 +78,7 @@ private:
 
   void
   onInvitationValidationFailed(const Interest& interest,
-                               const ndn::security::v2::ValidationError& failureInfo);
+                               const ndn::security::ValidationError& failureInfo);
 
   void
   onLocalPrefix(const ndn::ConstBufferPtr& data);
@@ -166,8 +166,8 @@ private:
 
   // Security related;
   ndn::KeyChain m_keyChain;
-  shared_ptr<ndn::security::v2::Validator> m_validator;
-  ndn::security::v2::ValidatorNull m_nullValidator;
+  shared_ptr<ndn::security::Validator> m_validator;
+  ndn::security::ValidatorNull m_nullValidator;
 
   // RegisteredPrefixId
   shared_ptr<ndn::RegisteredPrefixHandle> m_invitationListenerId;

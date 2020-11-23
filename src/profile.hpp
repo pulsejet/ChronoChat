@@ -44,7 +44,7 @@ public:
   {
   }
 
-  Profile(const ndn::security::v2::Certificate& identityCertificate);
+  Profile(const ndn::security::Certificate& identityCertificate);
 
   Profile(const Name& identityName);
 

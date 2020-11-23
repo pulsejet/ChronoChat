@@ -19,7 +19,7 @@ using std::vector;
 using std::string;
 using std::map;
 
-using ndn::security::v2::Certificate;
+using ndn::security::Certificate;
 
 const std::string Profile::OID_NAME("2.5.4.41");
 const std::string Profile::OID_ORG("2.5.4.11");
@@ -36,7 +36,7 @@ Profile::Profile(const Certificate& identityCertificate)
 
   auto additionalWire = identityCertificate.getSignatureInfo().getCustomTlv(tlv::AdditionalDescription);
   if (additionalWire) {
-    ndn::security::v2::AdditionalDescription additional(*additionalWire);
+    ndn::security::AdditionalDescription additional(*additionalWire);
 
     for (auto it = additional.begin(); it != additional.end(); it++) {
       const string oidStr = it->first;

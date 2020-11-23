@@ -30,7 +30,7 @@ using std::vector;
 using std::string;
 
 using ndn::KeyChain;
-using ndn::security::v2::Certificate;
+using ndn::security::Certificate;
 
 BOOST_AUTO_TEST_SUITE(TestEndorseCertificate)
 

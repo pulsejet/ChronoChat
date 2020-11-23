@@ -28,7 +28,7 @@
 INIT_LOGGER("chronochat.Controller");
 
 Q_DECLARE_METATYPE(ndn::Name)
-Q_DECLARE_METATYPE(ndn::security::v2::Certificate)
+Q_DECLARE_METATYPE(ndn::security::Certificate)
 Q_DECLARE_METATYPE(chronochat::EndorseInfo)
 Q_DECLARE_METATYPE(ndn::Interest)
 Q_DECLARE_METATYPE(size_t)
@@ -57,7 +57,7 @@ Controller::Controller(QWidget* parent)
   , m_discoveryPanel(new DiscoveryPanel(this))
 {
   qRegisterMetaType<ndn::Name>("ndn.Name");
-  qRegisterMetaType<ndn::security::v2::Certificate>("ndn.security.v2.Certificate");
+  qRegisterMetaType<ndn::security::Certificate>("ndn.security.v2.Certificate");
   qRegisterMetaType<chronochat::EndorseInfo>("EndorseInfo");
   qRegisterMetaType<ndn::Interest>("ndn.Interest");
   qRegisterMetaType<size_t>("size_t");
@@ -126,8 +126,8 @@ Controller::Controller(QWidget* parent)
           m_browseContactDialog, SLOT(onIdCertNameListReady(const QStringList&)));
   connect(m_backend.getContactManager(), SIGNAL(nameListReady(const QStringList&)),
           m_browseContactDialog, SLOT(onNameListReady(const QStringList&)));
-  connect(m_backend.getContactManager(), SIGNAL(idCertReady(const ndn::security::v2::Certificate&)),
-          m_browseContactDialog, SLOT(onIdCertReady(const ndn::security::v2::Certificate&)));
+  connect(m_backend.getContactManager(), SIGNAL(idCertReady(const ndn::security::Certificate&)),
+          m_browseContactDialog, SLOT(onIdCertReady(const ndn::security::Certificate&)));
 
   // Connection to ContactPanel
   connect(m_contactPanel, SIGNAL(waitForContactList()),

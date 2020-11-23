@@ -19,7 +19,7 @@
 
 namespace chronochat {
 
-using ndn::security::v2::Certificate;
+using ndn::security::Certificate;
 
 BrowseContactDialog::BrowseContactDialog(QWidget *parent)
   : QDialog(parent)
