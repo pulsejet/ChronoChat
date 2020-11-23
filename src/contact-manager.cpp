@@ -147,9 +147,11 @@ ContactManager::prepareEndorseInfo(const Name& identity)
     if (!ndn::security::verifySignature(**cIt, contact->getPublicKey().data(), contact->getPublicKey().size()))
       continue;
 
+    const Profile& tmpProfile = (*cIt)->getProfile();
     const vector<string>& endorseList = (*cIt)->getEndorseList();
     for (vector<string>::const_iterator eIt = endorseList.begin(); eIt != endorseList.end(); eIt++)
-      endorseCount[*eIt] += 1;
+      if (tmpProfile.get(*eIt) == profile.get(*eIt))
+        endorseCount[*eIt] += 1;
   }
 
   for (Profile::const_iterator pIt = profile.begin(); pIt != profile.end(); pIt++) {
