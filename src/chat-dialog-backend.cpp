@@ -204,7 +204,7 @@ ChatDialogBackend::processSyncUpdate(const std::vector<chronosync::MissingDataIn
                           [this] (const ndn::Data& data, const chronosync::ValidationError& error) {
                             this->processChatData(data, true, false);
                           },
-                          NULL,
+                          [] (const ndn::Interest& interest) {},
                           2);
       }
     }
@@ -217,7 +217,7 @@ ChatDialogBackend::processSyncUpdate(const std::vector<chronosync::MissingDataIn
                         [this] (const ndn::Data& data, const chronosync::ValidationError& error) {
                           this->processChatData(data, false, false);
                         },
-                        NULL,
+                        [] (const ndn::Interest& interest) {},
                         2);
     }
 
