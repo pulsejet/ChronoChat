@@ -20,7 +20,6 @@
 #include "common.hpp"
 #include "contact-manager.hpp"
 #include "invitation.hpp"
-#include "validation-policy-invitation.hpp"
 #include <ndn-cxx/security/key-chain.hpp>
 #include <ndn-cxx/ims/in-memory-storage-persistent.hpp>
 #include <ndn-cxx/security/validator-null.hpp>

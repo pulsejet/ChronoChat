@@ -44,11 +44,7 @@ ControllerBackend::ControllerBackend(QObject* parent)
   connect(&m_contactManager, SIGNAL(contactIdListReady(const QStringList&)),
           this, SLOT(onContactIdListReady(const QStringList&)));
 
-  unique_ptr<ndn::security::v2::ValidationPolicy> policy
-    = std::make_unique<ValidationPolicyInvitation>();
-  unique_ptr<ndn::security::v2::CertificateFetcher> certificateFetcher
-    = std::make_unique<ndn::security::v2::CertificateFetcherOffline>();
-  m_validator = make_shared<ndn::security::v2::Validator>(move(policy), move(certificateFetcher));
+  m_validator = make_shared<ndn::security::v2::ValidatorNull>();
 }
 
 ControllerBackend::~ControllerBackend()
