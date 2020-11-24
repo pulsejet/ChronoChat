@@ -283,9 +283,9 @@ private:
   BufferedIdCerts m_bufferedIdCerts;
 
   // Tmp Dns
-  shared_ptr<ndn::RegisteredPrefixHandle> m_dnsListenerId;
-  shared_ptr<ndn::RegisteredPrefixHandle> m_keyListenerId;
-  shared_ptr<ndn::RegisteredPrefixHandle> m_profileCertListenerId;
+  ndn::RegisteredPrefixHandle m_dnsListenerHandle;
+  ndn::RegisteredPrefixHandle m_keyListenerHandle;
+  ndn::RegisteredPrefixHandle m_profileCertListenerHandle;
 
   RecLock m_collectCountMutex;
   size_t m_collectCount;
