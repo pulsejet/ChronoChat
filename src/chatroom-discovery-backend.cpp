@@ -1,6 +1,6 @@
 /* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil -*- */
 /*
- * Copyright (c) 2013, Regents of the University of California
+ * Copyright (c) 2020, Regents of the University of California
  *
  * BSD license, See the LICENSE file for more information
  *
@@ -10,7 +10,6 @@
 
 #include "chatroom-discovery-backend.hpp"
 #include <QStringList>
-
 
 #ifndef Q_MOC_RUN
 
@@ -63,7 +62,7 @@ ChatroomDiscoveryBackend::run()
     try {
       m_face->getIoService().run();
     }
-    catch (std::runtime_error& e) {
+    catch (const std::runtime_error& e) {
       {
         std::lock_guard<std::mutex>lock(m_nfdConnectionMutex);
         m_isNfdConnected = false;

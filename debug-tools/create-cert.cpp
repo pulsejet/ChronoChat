@@ -19,7 +19,7 @@ void
 generateCertificate(KeyChain& keyChain, Name name) {
   try {
     keyChain.getPib().getIdentity(name);
-  } catch (ndn::security::pib::Pib::Error&) {
+  } catch (const ndn::security::pib::Pib::Error&) {
     Identity id = keyChain.createIdentity(name);
     Key key = id.getDefaultKey();
     Certificate cert = Certificate(key.getDefaultCertificate());

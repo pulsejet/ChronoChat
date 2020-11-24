@@ -8,10 +8,11 @@
  * Author: Yingdi Yu <yingdi@cs.ucla.edu>
  */
 
+#include "controller.hpp"
+
 #include <QApplication>
 #include <QTextCodec>
 
-#include "controller.hpp"
 #include <iostream>
 #include <ndn-cxx/face.hpp>
 #include <boost/thread/thread.hpp>
@@ -30,7 +31,7 @@ public:
     try {
       return QApplication::notify(receiver, event);
     }
-    catch (std::exception& e) {
+    catch (const std::exception& e) {
       std::cerr << "Exception thrown:" << e.what() << std::endl;
       return false;
     }

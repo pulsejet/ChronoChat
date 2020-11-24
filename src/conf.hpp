@@ -1,14 +1,14 @@
 /* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil -*- */
 /*
- * Copyright (c) 2013, Regents of the University of California
+ * Copyright (c) 2020, Regents of the University of California
  *
  * BSD license, See the LICENSE file for more information
  *
  * Author: Qiuhan Ding <qiuhanding@cs.ucla.edu>
  */
 
-#ifndef CHRONOCHAT_CONFIG_HPP
-#define CHRONOCHAT_CONFIG_HPP
+#ifndef CHRONOCHAT_CONF_HPP
+#define CHRONOCHAT_CONF_HPP
 
 #include "common.hpp"
 #include "tlv.hpp"
@@ -84,4 +84,4 @@ Conf::getNick() const
 
 } // namespace chronochat
 
-#endif //CHRONOCHAT_CONF_HPP
+#endif // CHRONOCHAT_CONF_HPP

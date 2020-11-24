@@ -1,6 +1,6 @@
 /* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil -*- */
 /*
- * Copyright (c) 2013, Regents of the University of California
+ * Copyright (c) 2020, Regents of the University of California
  *                     Yingdi Yu
  *
  * BSD license, See the LICENSE file for more information
@@ -256,7 +256,8 @@ public slots:
 
 private:
 
-  class FetchedInfo {
+  class FetchedInfo
+  {
   public:
     shared_ptr<EndorseCertificate> m_selfEndorseCert;
     shared_ptr<EndorseCollection> m_endorseCollection;

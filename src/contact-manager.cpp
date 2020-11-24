@@ -1,6 +1,6 @@
 /* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil -*- */
 /*
- * Copyright (c) 2013-2016, Regents of the University of California
+ * Copyright (c) 2013-2020, Regents of the University of California
  *                          Yingdi Yu
  *
  * BSD license, See the LICENSE file for more information
@@ -171,13 +171,13 @@ ContactManager::onDnsSelfEndorseCertValidated(const Data& data,
     else
       emit contactInfoFetchFailed(QString::fromStdString(identity.toUri() + ": verification failed"));
   }
-  catch(Block::Error& e) {
+  catch (const Block::Error& e) {
     emit contactInfoFetchFailed(QString::fromStdString(identity.toUri() + ": block error " + e.what()));
   }
-  catch(EndorseCertificate::Error& e) {
+  catch (const EndorseCertificate::Error& e) {
     emit contactInfoFetchFailed(QString::fromStdString(identity.toUri() + ": cert error " + e.what()));
   }
-  catch(Data::Error& e) {
+  catch (const Data::Error& e) {
     emit contactInfoFetchFailed(QString::fromStdString(identity.toUri() + ": data error " + e.what()));
   }
 }
@@ -211,7 +211,7 @@ ContactManager::onDnsCollectEndorseValidated(const Data& data,
     m_bufferedContacts[identity].m_endorseCollection = endorseCollection;
     fetchEndorseCertificateInternal(identity, 0);
   }
-  catch (std::runtime_error&) {
+  catch (const std::runtime_error&) {
     prepareEndorseInfo(identity);
   }
 }
@@ -566,7 +566,7 @@ ContactManager::onKeyInterest(const Name& prefix, const Interest& interest)
                                                 .getDefaultCertificate();
     if (cert.getKeyName() == interestName)
       return m_face.put(cert);
-  } catch (ndn::security::Pib::Error&) {}
+  } catch (const ndn::security::Pib::Error&) {}
 
   data = m_contactStorage->getSelfEndorseCertificate();
   if (static_cast<bool>(data) && data->getKeyName().equals(interestName))
@@ -652,7 +652,7 @@ ContactManager::onAddFetchedContact(const QString& identity)
 
       onWaitForContactList();
     }
-    catch(ContactStorage::Error& e) {
+    catch (const ContactStorage::Error& e) {
       emit warning(QString::fromStdString(e.what()));
     }
   }
@@ -740,7 +740,7 @@ ContactManager::onRefreshBrowseContact()
       if (!it->empty())
         bufferedIdCertNames.push_back(*it);
   }
-  catch(std::exception &e) {
+  catch (const std::exception &e) {
     emit warning(QString::fromStdString("Fail to fetch certificate directory! #N"));
   }
 
@@ -796,7 +796,7 @@ ContactManager::onAddFetchedContactIdCert(const QString& qCertName)
 
       onWaitForContactList();
     }
-    catch(ContactStorage::Error& e) {
+    catch (const ContactStorage::Error& e) {
       emit warning(QString::fromStdString(e.what()));
     }
   }

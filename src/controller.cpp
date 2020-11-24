@@ -1,6 +1,6 @@
 /* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil -*- */
 /*
- * Copyright (c) 2013, Regents of the University of California
+ * Copyright (c) 2020, Regents of the University of California
  *                     Yingdi Yu
  *
  * BSD license, See the LICENSE file for more information
@@ -9,19 +9,18 @@
  *         Qiuhan Ding <qiuhanding@cs.ucla.edu>
  */
 
+#include "controller.hpp"
+#include "cryptopp.hpp"
+#include "conf.hpp"
+#include "endorse-info.hpp"
+
 #include <QApplication>
 #include <QMessageBox>
 #include <QDir>
 #include <QTimer>
-#include "controller.hpp"
 
-#ifndef Q_MOC_RUN
 #include <boost/filesystem.hpp>
 #include <ndn-cxx/util/random.hpp>
-#include "cryptopp.hpp"
-#include "conf.hpp"
-#include "endorse-info.hpp"
-#endif
 
 Q_DECLARE_METATYPE(ndn::Name)
 Q_DECLARE_METATYPE(ndn::security::Certificate)
@@ -315,12 +314,12 @@ Controller::loadConf()
     else
       m_nick = m_identity.get(-1).toUri();
   }
-  catch (tlv::Error&) {
+  catch (const tlv::Error&) {
     try {
       ndn::KeyChain keyChain;
       m_identity = keyChain.getPib().getDefaultIdentity().getName();
     }
-    catch (ndn::security::pib::Pib::Error&) {
+    catch (const ndn::security::pib::Pib::Error&) {
       m_identity.clear();
       m_identity.append("chronochat-tmp-identity")
                 .append(getRandomString());

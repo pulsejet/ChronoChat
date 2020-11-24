@@ -1,6 +1,6 @@
 /* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil -*- */
 /*
- * Copyright (c) 2013-2016, Regents of the University of California
+ * Copyright (c) 2013-2020, Regents of the University of California
  *                          Yingdi Yu
  *
  * BSD license, See the LICENSE file for more information
@@ -68,7 +68,7 @@ ChatDialogBackend::run()
     try {
       m_face->getIoService().run();
     }
-    catch (std::runtime_error& e) {
+    catch (const std::runtime_error& e) {
       {
         std::lock_guard<std::mutex>lock(m_nfdConnectionMutex);
         m_isNfdConnected = false;
@@ -229,7 +229,7 @@ ChatDialogBackend::processChatData(const ndn::Data& data,
   try {
     msg.wireDecode(data.getContent().blockFromValue());
   }
-  catch (tlv::Error&) {
+  catch (const tlv::Error&) {
     // nasty stuff: as a remedy, we'll form some standard msg for inparsable msgs
     msg.setNick("inconnu");
     msg.setMsgType(ChatMessage::OTHER);
@@ -414,7 +414,7 @@ ChatDialogBackend::prepareControlMessage(ChatMessage& msg,
 void
 ChatDialogBackend::prepareChatMessage(const QString& text,
                                       time_t timestamp,
-                                      ChatMessage &msg)
+                                      ChatMessage& msg)
 {
   msg.setNick(m_nick);
   msg.setChatroomName(m_chatroomName);

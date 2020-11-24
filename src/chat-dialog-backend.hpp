@@ -25,13 +25,15 @@
 
 namespace chronochat {
 
-class NodeInfo {
+class NodeInfo
+{
 public:
   QString sessionPrefix;
   chronosync::SeqNo seqNo;
 };
 
-class UserInfo {
+class UserInfo
+{
 public:
   ndn::Name sessionPrefix;
   bool hasNick;
@@ -98,7 +100,7 @@ private:
   void
   prepareChatMessage(const QString& text,
                      time_t timestamp,
-                     ChatMessage &msg);
+                     ChatMessage& msg);
 
   void
   updatePrefixes();

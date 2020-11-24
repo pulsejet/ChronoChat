@@ -1,6 +1,6 @@
 /* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil -*- */
 /*
- * Copyright (c) 2013, Regents of the University of California
+ * Copyright (c) 2020, Regents of the University of California
  *                     Yingdi Yu
  *
  * BSD license, See the LICENSE file for more information
@@ -10,10 +10,9 @@
  */
 
 #include "contact-storage.hpp"
-
-#include <boost/filesystem.hpp>
 #include "cryptopp.hpp"
 
+#include <boost/filesystem.hpp>
 
 namespace chronochat {
 
@@ -215,7 +214,7 @@ ContactStorage::initializeTable(const string& tableName, const string& sqlCreate
 
   if (!tableExist) {
     char *errmsg = 0;
-    res = sqlite3_exec(m_db, sqlCreateStmt.c_str (), NULL, NULL, &errmsg);
+    res = sqlite3_exec(m_db, sqlCreateStmt.c_str (), nullptr, nullptr, &errmsg);
     if (res != SQLITE_OK && errmsg != 0)
       NDN_THROW(Error("Init \"error\" in " + tableName));
   }

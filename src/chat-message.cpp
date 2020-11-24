@@ -1,6 +1,6 @@
 /* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil -*- */
 /*
- * Copyright (c) 2013, Regents of the University of California
+ * Copyright (c) 2020, Regents of the University of California
  *
  * BSD license, See the LICENSE file for more information
  *
@@ -177,4 +177,4 @@ ChatMessage::setTimestamp(const time_t timestamp)
   m_timestamp = timestamp;
 }
 
-}// namespace chronochat
+} // namespace chronochat

@@ -1,6 +1,6 @@
 /* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil -*- */
 /*
- * Copyright (c) 2013, Regents of the University of California
+ * Copyright (c) 2020, Regents of the University of California
  *
  * BSD license, See the LICENSE file for more information
  *
@@ -8,10 +8,6 @@
  */
 
 #include "nfd-connection-checker.hpp"
-
-#ifndef Q_MOC_RUN
-
-#endif
 
 namespace chronochat {
 
@@ -46,7 +42,7 @@ NfdConnectionChecker::run()
                               [] (const Interest& interest) {});
       m_face->processEvents(time::milliseconds::zero(), true);
     }
-    catch (std::runtime_error& e) {
+    catch (const std::runtime_error& e) {
       {
         std::lock_guard<std::mutex>lock(m_nfdMutex);
         m_nfdConnected = false;

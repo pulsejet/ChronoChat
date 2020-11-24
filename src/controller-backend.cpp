@@ -1,6 +1,6 @@
 /* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil -*- */
 /*
- * Copyright (c) 2013-2016, Regents of the University of California
+ * Copyright (c) 2013-2020, Regents of the University of California
  *                          Yingdi Yu
  *
  * BSD license, See the LICENSE file for more information
@@ -61,7 +61,7 @@ ControllerBackend::run()
       setInvitationListener();
       m_face.processEvents();
     }
-    catch (std::runtime_error& e) {
+    catch (const std::runtime_error& e) {
       {
         std::lock_guard<std::mutex>lock(m_nfdConnectionMutex);
         m_isNfdConnected = false;
@@ -183,7 +183,7 @@ ControllerBackend::onInvitationInterest(const ndn::Name& prefix,
       if (m_chatDialogList.contains(QString::fromStdString(invitation.getChatroom())))
         return;
   }
-  catch (Invitation::Error& e) {
+  catch (const Invitation::Error& e) {
     // Cannot parse the invitation;
     return;
   }
@@ -267,7 +267,7 @@ ControllerBackend::onLocalPrefix(const ndn::ConstBufferPtr& data)
         prefix = Name("/private/local");
     }
   }
-  catch (Block::Error& e) {
+  catch (const Block::Error& e) {
     prefix = Name("/private/local");
   }
 
