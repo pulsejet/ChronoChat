@@ -28,7 +28,7 @@ public:
   notify(QObject* receiver, QEvent* event)
   {
     try {
-        return QApplication::notify(receiver, event);
+      return QApplication::notify(receiver, event);
     }
     catch (std::exception& e) {
       std::cerr << "Exception thrown:" << e.what() << std::endl;

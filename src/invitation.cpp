@@ -33,10 +33,10 @@ Invitation::Invitation(const Name& interestName)
   size_t nameSize = interestName.size();
 
   if (nameSize < NAME_SIZE_MIN)
-    throw Error("Wrong Invitation Name: Wrong length");
+    NDN_THROW(Error("Wrong Invitation Name: Wrong length"));
 
   if (interestName.get(CHRONOCHAT_INVITATION).toUri() != "CHRONOCHAT-INVITATION")
-    throw Error("Wrong Invitation Name: Wrong application tags");
+    NDN_THROW(Error("Wrong Invitation Name: Wrong application tags"));
 
   m_interestName = interestName.getPrefix(KEY_LOCATOR);
   m_timestamp = interestName.get(TIMESTAMP).toNumber();
