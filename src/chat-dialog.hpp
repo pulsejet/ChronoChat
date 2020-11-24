@@ -32,7 +32,7 @@
 
 namespace Ui {
 class ChatDialog;
-}
+} // namespace Ui
 
 namespace chronochat {
 

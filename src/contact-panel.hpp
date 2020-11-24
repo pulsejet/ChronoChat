@@ -11,20 +11,20 @@
 #ifndef CHRONOCHAT_CONTACT_PANEL_HPP
 #define CHRONOCHAT_CONTACT_PANEL_HPP
 
+#include "set-alias-dialog.hpp"
+#include "endorse-combobox-delegate.hpp"
+
 #include <QDialog>
 #include <QStringListModel>
 #include <QSqlTableModel>
 #include <QItemSelection>
-
-#include "set-alias-dialog.hpp"
-#include "endorse-combobox-delegate.hpp"
 
 #ifndef Q_MOC_RUN
 #endif
 
 namespace Ui {
 class ContactPanel;
-}
+} // namespace Ui
 
 namespace chronochat {
 

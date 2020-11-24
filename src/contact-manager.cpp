@@ -740,7 +740,7 @@ ContactManager::onRefreshBrowseContact()
       if (!it->empty())
         bufferedIdCertNames.push_back(*it);
   }
-  catch (const std::exception &e) {
+  catch (const std::exception& e) {
     emit warning(QString::fromStdString("Fail to fetch certificate directory! #N"));
   }
 

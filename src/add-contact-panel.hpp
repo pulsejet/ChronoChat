@@ -20,7 +20,7 @@
 
 namespace Ui {
 class AddContactPanel;
-}
+} // namespace Ui
 
 namespace chronochat {
 

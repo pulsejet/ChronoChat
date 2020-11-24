@@ -18,7 +18,7 @@ namespace Ui {
 class InvitationRequestDialog;
 } // namespace Ui
 
-namespace chronochat{
+namespace chronochat {
 
 class InvitationRequestDialog : public QDialog
 {

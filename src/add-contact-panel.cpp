@@ -11,9 +11,6 @@
 #include "add-contact-panel.hpp"
 #include "ui_add-contact-panel.h"
 
-#ifndef Q_MOC_RUN
-#endif
-
 namespace chronochat {
 
 AddContactPanel::AddContactPanel(QWidget *parent)

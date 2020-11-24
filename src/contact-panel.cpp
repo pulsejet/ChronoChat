@@ -1,6 +1,6 @@
 /* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil -*- */
 /*
- * Copyright (c) 2013, Regents of the University of California
+ * Copyright (c) 2020, Regents of the University of California
  *                     Yingdi Yu
  *
  * BSD license, See the LICENSE file for more information
@@ -200,8 +200,8 @@ ContactPanel::onContactInfoReady(const QString& identity,
 
 // private slots
 void
-ContactPanel::onSelectionChanged(const QItemSelection &selected,
-                                 const QItemSelection &deselected)
+ContactPanel::onSelectionChanged(const QItemSelection& selected,
+                                 const QItemSelection& deselected)
 {
   QModelIndexList items = selected.indexes();
   QString alias = m_contactListModel->data(items.first(), Qt::DisplayRole).toString();

@@ -150,7 +150,7 @@ ChatDialog::closeEvent(QCloseEvent *e)
 void
 ChatDialog::changeEvent(QEvent *e)
 {
-  switch(e->type()) {
+  switch (e->type()) {
   case QEvent::ActivationChange:
     if (isActiveWindow()) {
       emit resetIcon();

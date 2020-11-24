@@ -12,7 +12,7 @@
 #include <boost/test/unit_test.hpp>
 #include <ndn-cxx/encoding/buffer-stream.hpp>
 
-namespace chronochat{
+namespace chronochat {
 namespace tests {
 
 using std::string;
