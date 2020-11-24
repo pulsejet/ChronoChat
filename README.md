@@ -20,14 +20,12 @@ Note that after you click to close ChronoChat, it will keep running on your syst
 
         sudo port install nfd
         sudo nfd-start
-        sudo port install pkgconfig protobuf-cpp boost qt5-mac
+        sudo port install pkgconfig boost qt5-mac
 
 On Ubuntu, configure [NDN PPA repository](http://named-data.net/doc/NFD/current/FAQ.html#how-to-start-using-ndn-ppa-repository-on-ubuntu-linux) and install NFD if you don't have it yet, then install dependencies
 
         sudo apt-get install nfd
-        sudo apt-get install libprotobuf-dev protobuf-compiler libevent-dev libcrypto++-dev
-        sudo apt-get install libboost-all-dev
-        sudo apt-get install qt5-default
+        sudo apt-get install libcrypto++-dev libboost-all-dev qt5-default
 
 2. Configure and install ChronoSync
 

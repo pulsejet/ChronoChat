@@ -9,7 +9,7 @@ def options(opt):
 
     opt.load(['compiler_c', 'compiler_cxx', 'qt5', 'gnu_dirs'])
 
-    opt.load(['default-compiler-flags', 'boost', 'protoc',
+    opt.load(['default-compiler-flags', 'boost',
               'doxygen', 'sphinx_build', 'cryptopp'],
               tooldir=['.waf-tools'])
 
@@ -20,7 +20,7 @@ def options(opt):
 
 def configure(conf):
     conf.load(['compiler_c', 'compiler_cxx', 'qt5',
-               'default-compiler-flags', 'boost', 'protoc', 'gnu_dirs',
+               'default-compiler-flags', 'boost', 'gnu_dirs',
                'doxygen', 'sphinx_build', 'cryptopp'])
 
     conf.check_cfg(package='libndn-cxx', args=['--cflags', '--libs'],
@@ -56,7 +56,7 @@ def build (bld):
         target = "ChronoChat",
         features = feature_list,
         defines = "WAF=1",
-        source = bld.path.ant_glob(['src/*.cpp', 'src/*.ui', '*.qrc', 'logging.cc', 'src/*.proto']),
+        source = bld.path.ant_glob(['src/*.cpp', 'src/*.ui']),
         includes = "src .",
         use = "QT5CORE QT5GUI QT5WIDGETS QT5SQL NDN_CXX BOOST SYNC CRYPTOPP",
         moc = bld.path.ant_glob(['src/*.hpp']),

@@ -19,7 +19,5 @@ if has Ubuntu $NODE_LABELS; then
     sudo apt-get -qq -y install build-essential
     sudo apt-get -qq -y install libssl-dev libsqlite3-dev
 
-    sudo apt-get -qq -y install libprotobuf-dev protobuf-compiler libevent-dev libcrypto++-dev
-    sudo apt-get -qq -y install libboost-all-dev
-    sudo apt-get -qq -y install qt5-default
+    sudo apt-get -qq -y install libcrypto++-dev libboost-all-dev qt5-default
 fi
