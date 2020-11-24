@@ -112,9 +112,6 @@ ChatroomDiscoveryBackend::initializeSync()
                                                 this, _1));
 
   // add an timer to refresh front end
-  if (m_refreshPanelId) {
-    m_refreshPanelId.cancel();
-  }
   m_refreshPanelId = m_scheduler->schedule(REFRESH_INTERVAL,
                                            [this] { sendChatroomList(); });
 }
@@ -123,7 +120,6 @@ void
 ChatroomDiscoveryBackend::close()
 {
   m_scheduler->cancelAllEvents();
-  m_refreshPanelId.reset();
   m_chatroomList.clear();
   m_sock.reset();
 }
@@ -168,9 +164,9 @@ ChatroomDiscoveryBackend::processChatroomData(const ndn::Data& data)
         return;
       }
       else {
-        if (it->second.helloTimeoutEventId) {
+        if (it->second.helloTimeoutEventId)
           it->second.helloTimeoutEventId.cancel();
-        }
+
         it->second.isManager = false;
       }
 
@@ -248,10 +244,6 @@ ChatroomDiscoveryBackend::sendUpdate(const Name::Component& chatroomName)
   auto it = m_chatroomList.find(chatroomName);
   if (it != m_chatroomList.end() && it->second.isManager) {
     ndn::Block buf = it->second.info.wireEncode();
-
-    if (it->second.helloTimeoutEventId) {
-      it->second.helloTimeoutEventId.cancel();
-    }
 
     m_sock->publishData(buf.wire(), buf.size(), FRESHNESS_PERIOD, it->second.chatroomPrefix);
 
@@ -430,9 +422,6 @@ ChatroomDiscoveryBackend::sendChatroomList()
   }
 
   emit chatroomListReady(chatroomList);
-  if (m_refreshPanelId) {
-    m_refreshPanelId.cancel();
-  }
   m_refreshPanelId = m_scheduler->schedule(REFRESH_INTERVAL,
                                            [this] { sendChatroomList(); });
 }

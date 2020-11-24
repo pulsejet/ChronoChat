@@ -38,7 +38,7 @@ public:
   ndn::Name sessionPrefix;
   bool hasNick;
   std::string userNick;
-  ndn::scheduler::EventId timeoutEventId;
+  ndn::scheduler::ScopedEventId timeoutEventId;
 };
 
 class ChatDialogBackend : public QThread
