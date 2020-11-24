@@ -12,11 +12,14 @@
 #include "controller-backend.hpp"
 
 #ifndef Q_MOC_RUN
+#include <iostream>
+#include <boost/asio.hpp>
+
 #include <ndn-cxx/util/segment-fetcher.hpp>
 #include <ndn-cxx/security/signing-helpers.hpp>
 #include <ndn-cxx/security/certificate-fetcher-offline.hpp>
+
 #include "invitation.hpp"
-#include <iostream>
 #endif
 
 namespace chronochat {

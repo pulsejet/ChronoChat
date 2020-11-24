@@ -17,7 +17,6 @@
 
 #ifndef Q_MOC_RUN
 #include <boost/filesystem.hpp>
-#include <boost/lexical_cast.hpp>
 #include <ndn-cxx/util/random.hpp>
 #include "cryptopp.hpp"
 #include "conf.hpp"
