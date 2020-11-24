@@ -18,9 +18,6 @@ def options(opt):
     opt.add_option('--with-tests', action='store_true', default=False, dest='with_tests',
                    help='''build unit tests''')
 
-    opt.add_option('--with-log4cxx', action='store_true', default=False, dest='log4cxx',
-                   help='''Enable log4cxx''')
-
 def configure(conf):
     conf.load(['compiler_c', 'compiler_cxx', 'qt5',
                'default-compiler-flags', 'boost', 'protoc', 'gnu_dirs',
@@ -28,11 +25,6 @@ def configure(conf):
 
     conf.check_cfg(package='libndn-cxx', args=['--cflags', '--libs'],
                    uselib_store='NDN_CXX', mandatory=True)
-
-    if conf.options.log4cxx:
-        conf.check_cfg(package='liblog4cxx', args=['--cflags', '--libs'],
-                       uselib_store='LOG4CXX', mandatory=True)
-        conf.define("HAVE_LOG4CXX", 1)
 
     conf.check_cfg (package='ChronoSync', args=['ChronoSync >= 0.1', '--cflags', '--libs'],
                     uselib_store='SYNC', mandatory=True)
@@ -66,7 +58,7 @@ def build (bld):
         defines = "WAF=1",
         source = bld.path.ant_glob(['src/*.cpp', 'src/*.ui', '*.qrc', 'logging.cc', 'src/*.proto']),
         includes = "src .",
-        use = "QT5CORE QT5GUI QT5WIDGETS QT5SQL NDN_CXX BOOST LOG4CXX SYNC CRYPTOPP",
+        use = "QT5CORE QT5GUI QT5WIDGETS QT5SQL NDN_CXX BOOST SYNC CRYPTOPP",
         )
 
     # Unit tests

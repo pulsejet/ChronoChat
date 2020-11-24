@@ -176,13 +176,11 @@ ControllerBackend::getInvitationRoutingPrefix()
 void
 ControllerBackend::onInvitationPrefixReset()
 {
-  // _LOG_DEBUG("ControllerBackend::onInvitationPrefixReset");
 }
 
 void
 ControllerBackend::onInvitationPrefixResetFailed(const std::string& failInfo)
 {
-  // _LOG_DEBUG("ControllerBackend::onInvitationPrefixResetFailed: " << failInfo);
 }
 
 
@@ -191,7 +189,6 @@ ControllerBackend::onInvitationInterest(const ndn::Name& prefix,
                                         const ndn::Interest& interest,
                                         size_t routingPrefixOffset)
 {
-  // _LOG_DEBUG("onInvitationInterest: " << interest.getName());
   shared_ptr<Interest> invitationInterest =
     make_shared<Interest>(interest.getName().getSubName(routingPrefixOffset));
 
@@ -215,7 +212,6 @@ ControllerBackend::onInvitationInterest(const ndn::Name& prefix,
 void
 ControllerBackend::onInvitationRegisterFailed(const Name& prefix, const std::string& failInfo)
 {
-  // _LOG_DEBUG("ControllerBackend::onInvitationRegisterFailed: " << failInfo);
 }
 
 void
@@ -258,8 +254,6 @@ void
 ControllerBackend::onInvitationValidationFailed(const Interest& interest,
                                                 const ndn::security::ValidationError& failureInfo)
 {
-  // _LOG_DEBUG("Invitation: " << interest->getName() <<
-  //            " cannot not be validated due to: " << failureInfo);
 }
 
 void
@@ -440,8 +434,6 @@ ControllerBackend::onInvitationResponded(const ndn::Name& invitationName, bool a
     wrappedName.append(invitationRoutingPrefix)
       .append(ROUTING_HINT_SEPARATOR)
       .append(response->getName());
-
-    // _LOG_DEBUG("onInvitationResponded: prepare reply " << wrappedName);
 
     shared_ptr<Data> wrappedData = make_shared<Data>(wrappedName);
     wrappedData->setContent(response->wireEncode());

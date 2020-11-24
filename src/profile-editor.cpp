@@ -14,12 +14,6 @@
 #include <QtSql/QSqlField>
 #include <QtSql/QSqlError>
 
-#ifndef Q_MOC_RUN
-#include "logging.h"
-#endif
-
-// INIT_LOGGER("ProfileEditor")
-
 namespace chronochat {
 
 ProfileEditor::ProfileEditor(QWidget *parent)

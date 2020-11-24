@@ -12,8 +12,6 @@
 
 #include <ndn-cxx/security/signature-sha256-with-rsa.hpp>
 
-#include "logging.h"
-
 namespace chronochat {
 
 using std::string;

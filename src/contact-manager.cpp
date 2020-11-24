@@ -28,7 +28,6 @@
 #include <boost/asio.hpp>
 #include <boost/tokenizer.hpp>
 #include <boost/filesystem.hpp>
-#include "logging.h"
 #endif
 
 namespace fs = boost::filesystem;
@@ -112,17 +111,14 @@ ContactManager::fetchEndorseCertificateInternal(const Name& identity, size_t cer
 void
 ContactManager::prepareEndorseInfo(const Name& identity)
 {
-  // _LOG_DEBUG("prepareEndorseInfo");
   const Profile& profile = m_bufferedContacts[identity].m_selfEndorseCert->getProfile();
 
   shared_ptr<EndorseInfo> endorseInfo = make_shared<EndorseInfo>();
   m_bufferedContacts[identity].m_endorseInfo = endorseInfo;
 
   map<string, size_t> endorseCount;
-  for (Profile::const_iterator pIt = profile.begin(); pIt != profile.end(); pIt++) {
-    // _LOG_DEBUG("prepareEndorseInfo: profile[" << pIt->first << "]: " << pIt->second);
+  for (Profile::const_iterator pIt = profile.begin(); pIt != profile.end(); pIt++)
     endorseCount[pIt->first] = 0;
-  }
 
   size_t endorseCertCount = 0;
 
@@ -235,7 +231,6 @@ ContactManager::onDnsCollectEndorseValidationFailed(const Data& data,
 void
 ContactManager::onDnsCollectEndorseTimeoutNotify(const Interest& interest, const Name& identity)
 {
-  // _LOG_DEBUG("onDnsCollectEndorseTimeoutNotify: " << interest.getName());
   prepareEndorseInfo(identity);
 }
 
@@ -368,14 +363,12 @@ void
 ContactManager::onIdentityCertValidationFailed(const Data& data,
                                                const ndn::security::ValidationError& error)
 {
-  // _LOG_DEBUG("ContactManager::onIdentityCertValidationFailed " << data->getName());
   decreaseIdCertCount();
 }
 
 void
 ContactManager::onIdentityCertTimeoutNotify(const Interest& interest)
 {
-  // _LOG_DEBUG("ContactManager::onIdentityCertTimeoutNotify: " << interest.getName());
   decreaseIdCertCount();
 }
 
@@ -527,7 +520,6 @@ ContactManager::onTargetTimeout(const Interest& interest,
                                 const ndn::security::DataValidationFailureCallback& onValidationFailed,
                                 const TimeoutNotify& timeoutNotify)
 {
-  // _LOG_DEBUG("On interest timeout: " << interest.getName());
   if (retry > 0)
     sendInterest(interest, onValidated, onValidationFailed, timeoutNotify, retry-1);
   else
@@ -647,8 +639,6 @@ ContactManager::onFetchContactInfo(const QString& identity)
   Name interestName;
   interestName.append(identityName).append("DNS").append("PROFILE");
 
-  // _LOG_DEBUG("onFetchContactInfo " << identity.toStdString() << " profile: " << interestName);
-
   Interest interest(interestName);
   interest.setInterestLifetime(time::milliseconds(1000));
   interest.setMustBeFresh(true);
@@ -666,14 +656,12 @@ ContactManager::onFetchContactInfo(const QString& identity)
 void
 ContactManager::onAddFetchedContact(const QString& identity)
 {
-  // _LOG_DEBUG("onAddFetchedContact");
-
   Name identityName(identity.toStdString());
 
   BufferedContacts::const_iterator it = m_bufferedContacts.find(identityName);
   if (it != m_bufferedContacts.end()) {
     Contact contact(*(it->second.m_selfEndorseCert));
-    // _LOG_DEBUG("onAddFetchedContact: contact ready");
+
     try {
       m_contactStorage->addContact(contact);
       m_bufferedContacts.erase(identityName);
@@ -698,8 +686,6 @@ ContactManager::onUpdateProfile()
   shared_ptr<Profile> newProfile = m_contactStorage->getSelfProfile();
   if (!static_cast<bool>(newProfile))
     return;
-
-  // _LOG_DEBUG("ContactManager::onUpdateProfile: getProfile");
 
   shared_ptr<EndorseCertificate> newEndorseCertificate =
     getSignedSelfEndorseCertificate(*newProfile);

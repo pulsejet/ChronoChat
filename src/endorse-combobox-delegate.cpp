@@ -13,10 +13,6 @@
 #include <QComboBox>
 #include <QApplication>
 
-#ifndef Q_MOC_RUN
-#include "logging.h"
-#endif
-
 namespace chronochat {
 
 EndorseComboBoxDelegate::EndorseComboBoxDelegate(QObject* parent)

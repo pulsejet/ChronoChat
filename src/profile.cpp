@@ -10,7 +10,6 @@
  */
 
 #include "profile.hpp"
-#include "logging.h"
 #include <ndn-cxx/security/additional-description.hpp>
 
 namespace chronochat {

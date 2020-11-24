@@ -20,12 +20,9 @@
 #include <boost/lexical_cast.hpp>
 #include <ndn-cxx/util/random.hpp>
 #include "cryptopp.hpp"
-#include "logging.h"
 #include "conf.hpp"
 #include "endorse-info.hpp"
 #endif
-
-INIT_LOGGER("chronochat.Controller");
 
 Q_DECLARE_METATYPE(ndn::Name)
 Q_DECLARE_METATYPE(ndn::security::Certificate)
@@ -286,9 +283,6 @@ Controller::openDB()
   m_db.setDatabaseName(path);
 
   m_db.open();
-
-  // bool ok = m_db.open();
-  // _LOG_DEBUG("DB opened: " << std::boolalpha << ok );
 }
 
 void
@@ -553,7 +547,6 @@ void
 Controller::onIdentityUpdatedContinued()
 {
   QString connection = m_db.connectionName();
-  // _LOG_DEBUG("connection name: " << connection.toStdString());
   QSqlDatabase::removeDatabase(connection);
   m_db.close();
 

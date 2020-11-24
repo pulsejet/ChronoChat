@@ -18,12 +18,6 @@
 #include <QtSql/QSqlField>
 #include <QtSql/QSqlError>
 
-#ifndef Q_MOC_RUN
-#include "logging.h"
-#endif
-
-// INIT_LOGGER("ContactPanel");
-
 namespace chronochat {
 
 ContactPanel::ContactPanel(QWidget *parent)
@@ -129,15 +123,10 @@ ContactPanel::resetPanel()
 void
 ContactPanel::onCloseDBModule()
 {
-  // _LOG_DEBUG("close db module");
-  if (m_trustScopeModel) {
+  if (m_trustScopeModel)
     delete m_trustScopeModel;
-    // _LOG_DEBUG("trustScopeModel closed");
-  }
-  if (m_endorseDataModel) {
+  if (m_endorseDataModel)
     delete m_endorseDataModel;
-    // _LOG_DEBUG("endorseDataModel closed");
-  }
 }
 
 void
@@ -341,5 +330,4 @@ ContactPanel::onAliasChanged(const QString& identity, const QString& alias)
 
 #if WAF
 #include "contact-panel.moc"
-// #include "contact-panel.cpp.moc"
 #endif
