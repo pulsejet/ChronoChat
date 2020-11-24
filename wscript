@@ -82,9 +82,9 @@ def build (bld):
 
     # Debug tools
     if bld.env["_DEBUG"]:
-        for app in bld.path.ant_glob('debug-tools/*.cc'):
+        for app in bld.path.ant_glob('debug-tools/*.cpp'):
             bld(features=['cxx', 'cxxprogram'],
-                target = '%s' % (str(app.change_ext('','.cc'))),
+                target = '%s' % (str(app.change_ext('','.cpp'))),
                 source = app,
                 use = 'NDN_CXX',
                 includes = "src .",
