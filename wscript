@@ -59,7 +59,7 @@ def build (bld):
         target = "ChronoChat",
         features = feature_list,
         defines = "WAF=1",
-        source = bld.path.ant_glob(['src/*.cpp', 'src/*.ui']),
+        source = bld.path.ant_glob(['src/*.cpp', 'src/*.ui', '*.qrc']),
         includes = "src .",
         use = "QT5CORE QT5GUI QT5WIDGETS QT5SQL NDN_CXX BOOST SYNC CRYPTOPP",
         moc = bld.path.ant_glob(['src/*.hpp']),
