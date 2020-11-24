@@ -5,14 +5,6 @@
  * See COPYING for copyright and distribution information.
  */
 
-#if __clang__
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wtautological-compare"
-#pragma clang diagnostic ignored "-Wunused-function"
-#elif __GNUC__
-#pragma GCC diagnostic ignored "-Wunused-function"
-#endif
-
 #include <boost/test/unit_test.hpp>
 #include <boost/filesystem.hpp>
 

@@ -9,10 +9,6 @@
  *         Qiuhan Ding <qiuhanding@cs.ucla.edu>
  */
 
-#if __clang__
-#pragma clang diagnostic ignored "-Wtautological-compare"
-#endif
-
 #include "contact-manager.hpp"
 #include <QStringList>
 #include <QFile>
