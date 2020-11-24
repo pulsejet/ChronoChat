@@ -11,7 +11,7 @@ def options(opt):
 
     opt.load(['default-compiler-flags', 'boost', 'protoc',
               'doxygen', 'sphinx_build', 'qt5', 'cryptopp'],
-              tooldir=['waf-tools'])
+              tooldir=['.waf-tools'])
 
     opt = opt.add_option_group('ChronotChat Options')
 
