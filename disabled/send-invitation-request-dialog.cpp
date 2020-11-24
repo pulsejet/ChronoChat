@@ -92,8 +92,3 @@ SendInvitationRequestDialog::setChatroomName(const QString chatroomName)
 {
   m_chatroomName = chatroomName;
 }
-
-
-#if WAF
-#include "send-invitation-request-dialog.moc"
-#endif

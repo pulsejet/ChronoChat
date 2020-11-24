@@ -471,7 +471,3 @@ ChatroomDiscoveryBackend::onNfdReconnect()
 }
 
 } // namespace chronochat
-
-#if WAF
-#include "chatroom-discovery-backend.moc"
-#endif

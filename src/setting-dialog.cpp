@@ -82,8 +82,3 @@ SettingDialog::onCancelClicked()
 }
 
 } // namespace chronochat
-
-#if WAF
-#include "setting-dialog.moc"
-// #include "setting-dialog.cpp.moc"
-#endif

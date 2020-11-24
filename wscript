@@ -10,7 +10,7 @@ def options(opt):
     opt.load(['compiler_c', 'compiler_cxx', 'qt5', 'gnu_dirs'])
 
     opt.load(['default-compiler-flags', 'boost', 'protoc',
-              'doxygen', 'sphinx_build', 'qt5', 'cryptopp'],
+              'doxygen', 'sphinx_build', 'cryptopp'],
               tooldir=['.waf-tools'])
 
     opt = opt.add_option_group('ChronotChat Options')
@@ -59,6 +59,7 @@ def build (bld):
         source = bld.path.ant_glob(['src/*.cpp', 'src/*.ui', '*.qrc', 'logging.cc', 'src/*.proto']),
         includes = "src .",
         use = "QT5CORE QT5GUI QT5WIDGETS QT5SQL NDN_CXX BOOST SYNC CRYPTOPP",
+        moc = bld.path.ant_glob(['src/*.hpp']),
         )
 
     # Unit tests

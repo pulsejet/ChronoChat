@@ -53,8 +53,3 @@ StartChatDialog::onCancelClicked()
 }
 
 } // namespace chronochat
-
-#if WAF
-#include "start-chat-dialog.moc"
-// #include "start-chat-dialog.cpp.moc"
-#endif

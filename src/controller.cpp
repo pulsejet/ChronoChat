@@ -828,8 +828,3 @@ Controller::onChatroomInfoRequest(std::string chatroomName, bool isManager)
 }
 
 } // namespace chronochat
-
-#if WAF
-#include "controller.moc"
-// #include "controller.cpp.moc"
-#endif

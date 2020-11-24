@@ -491,8 +491,3 @@ ControllerBackend::onNfdReconnect()
 
 
 } // namespace chronochat
-
-#if WAF
-#include "controller-backend.moc"
-// #include "controller-backend.cpp.moc"
-#endif

@@ -132,8 +132,3 @@ BrowseContactDialog::onIdCertReady(const Certificate& idCert)
 }
 
 } // namespace chronochat
-
-#if WAF
-#include "browse-contact-dialog.moc"
-// #include "browse-contact-dialog.cpp.moc"
-#endif

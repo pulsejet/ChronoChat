@@ -64,8 +64,3 @@ InvitationRequestDialog::onCancelClicked()
 }
 
 } // namespace chronochat
-
-#if WAF
-#include "invitation-request-dialog.moc"
-// #include "invitation-request-dialog.cpp.moc"
-#endif

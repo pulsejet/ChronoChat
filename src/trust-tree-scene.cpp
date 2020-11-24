@@ -105,8 +105,3 @@ TrustTreeScene::plotNode(const TrustTreeNodeList& nodeList, int nodeSize)
 }
 
 } //namespace chronochat
-
-#if WAF
-#include "trust-tree-scene.moc"
-// #include "trust-tree-scene.cpp.moc"
-#endif

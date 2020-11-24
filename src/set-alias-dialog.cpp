@@ -53,8 +53,3 @@ SetAliasDialog::setTargetIdentity(const QString& targetIdentity, const QString& 
 }
 
 } // namespace chronochat
-
-#if WAF
-#include "set-alias-dialog.moc"
-// #include "set-alias-dialog.cpp.moc"
-#endif

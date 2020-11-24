@@ -73,8 +73,3 @@ EndorseComboBoxDelegate::paint(QPainter* painter,
 }
 
 } // namespace chronochat
-
-#if WAF
-#include "endorse-combobox-delegate.moc"
-// #include "endorse-combobox-delegate.cpp.moc"
-#endif

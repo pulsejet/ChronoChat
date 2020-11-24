@@ -327,7 +327,3 @@ ContactPanel::onAliasChanged(const QString& identity, const QString& alias)
 }
 
 } // namespace chronochat
-
-#if WAF
-#include "contact-panel.moc"
-#endif
