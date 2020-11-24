@@ -1,23 +1,31 @@
 #!/usr/bin/env bash
-set -x
-set -e
-
-JDIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
-source "$JDIR"/util.sh
-
-[[ -n $NODE_LABELS ]] || exit 0
+set -ex
 
 if has OSX $NODE_LABELS; then
-    brew update
-    brew upgrade
-    brew install boost pkg-config qt4
-    brew cleanup
-fi
+    FORMULAE=(boost openssl pkg-config qt5)
+    if has OSX-10.13 $NODE_LABELS || has OSX-10.14 $NODE_LABELS; then
+        FORMULAE+=(python)
+    fi
 
-if has Ubuntu $NODE_LABELS; then
-    sudo apt-get update -qq -y
-    sudo apt-get -qq -y install build-essential
-    sudo apt-get -qq -y install libssl-dev libsqlite3-dev
+    if [[ -n $TRAVIS ]]; then
+        # Travis images come with a large number of pre-installed
+        # brew packages, don't waste time upgrading all of them
+        brew list --versions "${FORMULAE[@]}" || brew update
+        for FORMULA in "${FORMULAE[@]}"; do
+            brew list --versions "$FORMULA" || brew install "$FORMULA"
+        done
+        # Ensure /usr/local/opt/openssl exists
+        brew reinstall openssl
+    else
+        brew update
+        brew upgrade
+        brew install "${FORMULAE[@]}"
+        brew cleanup
+    fi
 
-    sudo apt-get -qq -y install libcrypto++-dev libboost-all-dev qt5-default
+elif has Ubuntu $NODE_LABELS; then
+    sudo apt-get -qq update
+    sudo apt-get -qy install g++ pkg-config python3-minimal \
+                             libboost-all-dev libssl-dev libsqlite3-dev \
+                             libcrypto++-dev qt5-default
 fi

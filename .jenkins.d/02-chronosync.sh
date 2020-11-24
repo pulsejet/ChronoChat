@@ -8,10 +8,15 @@ sudo rm -f /usr/local/lib/pkgconfig/ChronoSync*
 
 # Update ChronoSync
 git clone git://github.com/named-data/ChronoSync
+
 pushd ChronoSync >/dev/null
-sudo ./waf --color=yes distclean
+
 ./waf --color=yes configure
-./waf --color=yes build
-sudo ./waf install --color=yes
-sudo ldconfig || true
+./waf --color=yes build -j$WAF_JOBS
+sudo_preserve_env PATH -- ./waf --color=yes install
+
 popd >/dev/null
+
+if has Linux $NODE_LABELS; then
+    sudo ldconfig
+fi
