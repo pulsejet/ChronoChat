@@ -12,10 +12,6 @@
 
 #include "common.hpp"
 #include "tlv.hpp"
-#include <ndn-cxx/util/concepts.hpp>
-#include <ndn-cxx/encoding/block.hpp>
-#include <ndn-cxx/encoding/encoding-buffer.hpp>
-#include <list>
 
 namespace chronochat {
 

@@ -14,32 +14,26 @@ Note that after you click to close ChronoChat, it will keep running on your syst
 ## For those who want (or is forced to) compile from source code
 -----------------------------------------------------------------
 
-### Compilation steps for OSX
+### Compilation steps
 
-1. On Mac, install MacPorts, if not yet installed (http://www.macports.org/), configure [NDN ports repository](http://named-data.net/doc/NFD/current/FAQ.html#how-to-start-using-ndn-macports-repository-on-osx) and install NFD if you don't have it yet. Install the dependencies next.
-
-        sudo port install nfd
-        sudo nfd-start
-        sudo port install pkgconfig boost qt5-mac
-
-On Ubuntu, configure [NDN PPA repository](http://named-data.net/doc/NFD/current/FAQ.html#how-to-start-using-ndn-ppa-repository-on-ubuntu-linux) and install NFD if you don't have it yet, then install dependencies
+1. On Ubuntu, configure [NDN PPA repository](http://named-data.net/doc/NFD/current/FAQ.html#how-to-start-using-ndn-ppa-repository-on-ubuntu-linux) and install NFD if you don't have it yet, then install dependencies
 
         sudo apt-get install nfd
         sudo apt-get install libcrypto++-dev libboost-all-dev qt5-default
 
 2. Configure and install ChronoSync
 
-        git clone git://github.com/named-data/ChronoSync
+        git clone https://github.com/named-data/ChronoSync
         cd ChronoSync
         ./waf configure
         ./waf
         sudo ./waf install
-        sudo ldconfig  # Ubuntu only
+        sudo ldconfig
         cd ..
 
 3. Fetch source code
 
-        git clone git://github.com/named-data/ChronoChat
+        git clone https://github.com/named-data/ChronoChat
 
 4. Configure and build ChronoChat
 

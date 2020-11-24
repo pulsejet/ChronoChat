@@ -9,5 +9,6 @@
 
 #define BOOST_TEST_MAIN 1
 #define BOOST_TEST_DYN_LINK 1
+#define BOOST_TEST_MODULE chronochat
 
 #include <boost/test/unit_test.hpp>

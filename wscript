@@ -13,7 +13,7 @@ def options(opt):
               'doxygen', 'sphinx_build', 'cryptopp'],
               tooldir=['.waf-tools'])
 
-    opt = opt.add_option_group('ChronotChat Options')
+    opt = opt.add_option_group('ChronoChat Options')
 
     opt.add_option('--with-tests', action='store_true', default=False, dest='with_tests',
                    help='''build unit tests''')
@@ -26,7 +26,7 @@ def configure(conf):
     conf.check_cfg(package='libndn-cxx', args=['--cflags', '--libs'],
                    uselib_store='NDN_CXX', mandatory=True)
 
-    conf.check_cfg (package='ChronoSync', args=['ChronoSync >= 0.1', '--cflags', '--libs'],
+    conf.check_cfg (package='ChronoSync', args=['ChronoSync >= 0.5', '--cflags', '--libs'],
                     uselib_store='SYNC', mandatory=True)
 
     boost_libs = 'system random thread filesystem'
@@ -35,12 +35,15 @@ def configure(conf):
         conf.define('WITH_TESTS', 1);
         boost_libs += ' unit_test_framework'
 
-    conf.check_boost(lib=boost_libs)
-    if conf.env.BOOST_VERSION_NUMBER < 104800:
-        Logs.error("Minimum required boost version is 1.48.0")
-        Logs.error("Please upgrade your distribution or install custom boost libraries" +
-                   " (http://redmine.named-data.net/projects/nfd/wiki/Boost_FAQ)")
-        return
+    conf.check_boost(lib=boost_libs, mt=True)
+    if conf.env.BOOST_VERSION_NUMBER < 105800:
+        conf.fatal('The minimum supported version of Boost is 1.65.1.\n'
+                   'Please upgrade your distribution or manually install a newer version of Boost.\n'
+                   'For more information, see https://redmine.named-data.net/projects/nfd/wiki/Boost')
+    elif conf.env.BOOST_VERSION_NUMBER < 106501:
+        Logs.warn('WARNING: Using a version of Boost older than 1.65.1 is not officially supported and may not work.\n'
+                  'If you encounter any problems, please upgrade your distribution or manually install a newer version of Boost.\n'
+                  'For more information, see https://redmine.named-data.net/projects/nfd/wiki/Boost')
 
     conf.check_cryptopp()
     conf.write_config_header('src/config.h')
