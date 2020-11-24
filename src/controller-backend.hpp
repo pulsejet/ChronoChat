@@ -170,8 +170,8 @@ private:
   ndn::security::ValidatorNull m_nullValidator;
 
   // RegisteredPrefixId
-  shared_ptr<ndn::RegisteredPrefixHandle> m_invitationListenerId;
-  shared_ptr<ndn::RegisteredPrefixHandle> m_requestListenerId;
+  ndn::RegisteredPrefixHandle m_invitationListenerHandle;
+  ndn::RegisteredPrefixHandle m_requestListenerHandle;
 
   // ChatRoomList
   QStringList m_chatDialogList;

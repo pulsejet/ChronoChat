@@ -139,35 +139,17 @@ ControllerBackend::setInvitationListener()
   invitationPrefix.append(m_identity).append("CHRONOCHAT-INVITATION");
   requestPrefix.append(m_identity).append("CHRONOCHAT-INVITATION-REQUEST");
 
-  auto invitationListenerId =
-    make_shared<ndn::RegisteredPrefixHandle>(m_face.setInterestFilter(invitationPrefix,
-                             bind(&ControllerBackend::onInvitationInterest,
-                                  this, _1, _2, offset),
-                             bind(&ControllerBackend::onInvitationRegisterFailed,
-                                  this, _1, _2)));
+  m_invitationListenerHandle.unregister(
+    bind(&ControllerBackend::onInvitationPrefixReset, this),
+    bind(&ControllerBackend::onInvitationPrefixResetFailed, this, _1));
+  m_invitationListenerHandle = m_face.setInterestFilter(invitationPrefix,
+    bind(&ControllerBackend::onInvitationInterest, this, _1, _2, offset),
+    bind(&ControllerBackend::onInvitationRegisterFailed, this, _1, _2));
 
-  if (m_invitationListenerId != 0) {
-    invitationListenerId->unregister(
-      bind(&ControllerBackend::onInvitationPrefixReset, this),
-      bind(&ControllerBackend::onInvitationPrefixResetFailed, this, _1));
-  }
-
-  m_invitationListenerId = invitationListenerId;
-
-  auto requestListenerId =
-    make_shared<ndn::RegisteredPrefixHandle>(
-      m_face.setInterestFilter(requestPrefix,
-                               bind(&ControllerBackend::onInvitationRequestInterest,
-                                    this, _1, _2, offset),
-                               [] (const Name& prefix, const std::string& failInfo) {}));
-
-  if (m_requestListenerId != 0) {
-    m_requestListenerId->unregister(
-      []{},
-      [] (const std::string& failInfo) {});
-  }
-
-  m_requestListenerId = requestListenerId;
+  m_requestListenerHandle.unregister();
+  m_requestListenerHandle = m_face.setInterestFilter(requestPrefix,
+    bind(&ControllerBackend::onInvitationRequestInterest, this, _1, _2, offset),
+    [] (const Name& prefix, const std::string& failInfo) {});
 }
 
 ndn::Name
