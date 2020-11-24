@@ -1,9 +1,25 @@
-.waf-1*
-**/*.pyc
-build/
-.lock*
-*.o
-*.DS_Store
+# Emacs
 *~
-tmp/
+\#*\#
+/.emacs.desktop
+/.emacs.desktop.lock
+*.elc
+.\#*
+
+# Visual Studio Code
+.vscode/
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+
+# Waf build system
+/build/
 .waf3-*-*/
+.lock-waf*
+
+# Compiled python code
+__pycache__/
+*.py[cod]
