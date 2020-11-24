@@ -6,10 +6,8 @@ sudo rm -Rf /usr/local/include/ChronoSync
 sudo rm -f /usr/local/lib/libChronoSync*
 sudo rm -f /usr/local/lib/pkgconfig/ChronoSync*
 
-
 # Update ChronoSync
-git submodule init
-git submodule update
+git clone git://github.com/named-data/ChronoSync
 pushd ChronoSync >/dev/null
 sudo ./waf --color=yes distclean
 ./waf --color=yes configure
