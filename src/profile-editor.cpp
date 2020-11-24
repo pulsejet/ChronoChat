@@ -34,9 +34,7 @@ ProfileEditor::ProfileEditor(QWidget *parent)
 ProfileEditor::~ProfileEditor()
 {
     delete ui;
-
-    if (m_tableModel)
-      delete m_tableModel;
+    delete m_tableModel;
 }
 
 void

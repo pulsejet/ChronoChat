@@ -58,7 +58,7 @@ signals:
 
 private:
   Ui::ProfileEditor* ui;
-  QSqlTableModel* m_tableModel;
+  QSqlTableModel* m_tableModel = 0;
   QString m_identity;
 };
 
