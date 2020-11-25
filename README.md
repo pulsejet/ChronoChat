@@ -16,26 +16,16 @@ Note that after you click to close ChronoChat, it will keep running on your syst
 
 ### Compilation steps
 
-1. On Ubuntu, configure [NDN PPA repository](http://named-data.net/doc/NFD/current/FAQ.html#how-to-start-using-ndn-ppa-repository-on-ubuntu-linux) and install NFD if you don't have it yet, then install dependencies
+1. On Ubuntu, configure [NDN PPA repository](http://named-data.net/doc/NFD/current/FAQ.html#how-to-start-using-ndn-ppa-repository-on-ubuntu-linux) and install NFD and ChronoSYnc if you don't have it yet, then install dependencies
 
-        sudo apt-get install nfd
+        sudo apt-get install nfd libndn-cxx-dev libchronosync-dev
         sudo apt-get install libcrypto++-dev libboost-all-dev qt5-default
 
-2. Configure and install ChronoSync
-
-        git clone https://github.com/named-data/ChronoSync
-        cd ChronoSync
-        ./waf configure
-        ./waf
-        sudo ./waf install
-        sudo ldconfig
-        cd ..
-
-3. Fetch source code
+2. Fetch source code
 
         git clone https://github.com/named-data/ChronoChat
 
-4. Configure and build ChronoChat
+3. Configure and build ChronoChat
 
         ./waf configure
         ./waf

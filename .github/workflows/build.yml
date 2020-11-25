@@ -26,3 +26,24 @@ jobs:
     - name: Run build script
       run: |
         ./.jenkins
+
+  ubuntu-ppa:
+    runs-on: ubuntu-latest
+    name: Ubuntu PPA build
+
+    env:
+      NODE_LABELS: "Linux Ubuntu Ubuntu"
+      WAF_JOBS: 2
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Run build script
+      run: |
+        sudo apt install -y software-properties-common
+        sudo add-apt-repository ppa:named-data/ppa -y
+        sudo apt update
+        sudo apt-get install nfd libndn-cxx-dev libchronosync-dev
+        sudo apt-get install libcrypto++-dev libboost-all-dev qt5-default
+        ./waf configure
+        ./waf
