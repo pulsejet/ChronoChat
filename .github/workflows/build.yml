@@ -31,10 +31,6 @@ jobs:
     runs-on: ubuntu-latest
     name: Ubuntu PPA build
 
-    env:
-      NODE_LABELS: "Linux Ubuntu Ubuntu"
-      WAF_JOBS: 2
-
     steps:
     - uses: actions/checkout@v2
 
@@ -45,5 +41,5 @@ jobs:
         sudo apt update
         sudo apt-get install nfd libndn-cxx-dev libchronosync-dev
         sudo apt-get install libcrypto++-dev libboost-all-dev qt5-default
-        ./waf configure
-        ./waf
+        ./waf --color=yes configure --debug
+        ./waf --color=yes build -j2
