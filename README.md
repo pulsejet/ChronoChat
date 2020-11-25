@@ -11,10 +11,8 @@ Note that after you click to close ChronoChat, it will keep running on your syst
 1. When you switch to a new room, you'll temporarily see yourself in two nodes for a minute or so. It won't affect others, just yourself. Hopefully it's not so disturbing.
 2. Sometimes you may not get the most up-to-date chat history.
 
-## For those who want (or is forced to) compile from source code
------------------------------------------------------------------
-
-### Compilation steps
+## Compilation steps
+---------------
 
 1. On Ubuntu, configure [NDN PPA repository](http://named-data.net/doc/NFD/current/FAQ.html#how-to-start-using-ndn-ppa-repository-on-ubuntu-linux) and install NFD and ChronoSYnc if you don't have it yet, then install dependencies
 
