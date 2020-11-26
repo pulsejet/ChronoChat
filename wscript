@@ -7,10 +7,10 @@ import os
 
 def options(opt):
 
-    opt.load(['compiler_c', 'compiler_cxx', 'qt5', 'gnu_dirs'])
+    opt.load(['compiler_c', 'compiler_cxx', 'gnu_dirs'])
 
     opt.load(['default-compiler-flags', 'boost',
-              'doxygen', 'sphinx_build', 'qt5', 'cryptopp'],
+              'doxygen', 'sphinx_build', 'qt5_c', 'cryptopp'],
               tooldir=['.waf-tools'])
 
     opt = opt.add_option_group('ChronoChat Options')
@@ -19,7 +19,7 @@ def options(opt):
                    help='''build unit tests''')
 
 def configure(conf):
-    conf.load(['compiler_c', 'compiler_cxx', 'qt5',
+    conf.load(['compiler_c', 'compiler_cxx', 'qt5_c',
                'default-compiler-flags', 'boost', 'gnu_dirs',
                'doxygen', 'sphinx_build', 'cryptopp'])
 
