@@ -2,20 +2,31 @@
 set -ex
 
 if has OSX $NODE_LABELS; then
-    FORMULAE=(boost openssl pkg-config qt5)
+    git clone https://github.com/weidai11/cryptopp/
+    cd cryptopp
+    make -j4
+    make install
+    cd ..
+
+    FORMULAE=(boost openssl pkg-config qt)
     if has OSX-10.13 $NODE_LABELS || has OSX-10.14 $NODE_LABELS; then
         FORMULAE+=(python)
     fi
 
-    if [[ -n $TRAVIS ]]; then
+    if [[ -n $TRAVIS ]] || [[ -n $GITHUB_ACTIONS ]]; then
         # Travis images come with a large number of pre-installed
         # brew packages, don't waste time upgrading all of them
-        brew list --versions "${FORMULAE[@]}" || brew update
+        # brew list --versions "${FORMULAE[@]}" || brew update
         for FORMULA in "${FORMULAE[@]}"; do
             brew list --versions "$FORMULA" || brew install "$FORMULA"
         done
-        # Ensure /usr/local/opt/openssl exists
-        brew reinstall openssl
+
+        brew link qt5 --force
+
+        if [[ -n $TRAVIS ]]; then
+            # Ensure /usr/local/opt/openssl exists
+            brew reinstall openssl
+        fi
     else
         brew update
         brew upgrade

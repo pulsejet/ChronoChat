@@ -43,3 +43,26 @@ jobs:
         sudo apt-get install libcrypto++-dev libboost-all-dev qt5-default
         ./waf --color=yes configure --debug
         ./waf --color=yes build -j2
+
+  macos:
+    runs-on: ${{ matrix.os }}
+    continue-on-error: false
+    name: Xcode ${{ matrix.xcode }}
+
+    strategy:
+      matrix:
+        os: [macos-latest]
+        xcode: [12]
+
+    env:
+      WAF_JOBS: 2
+      JOB_NAME: limited-build
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Run build script
+      run: |
+        sudo xcode-select -s /Applications/Xcode_${{ matrix.xcode }}.app/Contents/Developer
+        export NODE_LABELS="OSX OSX-$(sw_vers -productVersion | cut -d . -f -2)"
+        ./.jenkins
