@@ -871,3 +871,8 @@ ContactManager::onUpdateEndorseCertificate(const QString& identity)
 }
 
 } // namespace chronochat
+
+
+#if WAF
+#include "contact-manager.moc"
+#endif

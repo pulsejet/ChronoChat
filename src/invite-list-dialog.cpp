@@ -79,3 +79,7 @@ InviteListDialog::onContactIdListReady(const QStringList& idList)
 }
 
 } // namespace chronochat
+
+#if WAF
+#include "invite-list-dialog.moc"
+#endif

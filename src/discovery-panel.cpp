@@ -228,3 +228,7 @@ DiscoveryPanel::onInvitationRequestResult(const std::string& message)
 }
 
 } // namespace chronochat
+
+#if WAF
+#include "discovery-panel.moc"
+#endif

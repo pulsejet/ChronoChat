@@ -505,3 +505,7 @@ ChatDialogBackend::onNfdReconnect()
 }
 
 } // namespace chronochat
+
+#if WAF
+#include "chat-dialog-backend.moc"
+#endif

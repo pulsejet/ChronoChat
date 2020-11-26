@@ -446,3 +446,8 @@ void ChatDialog::enableSyncTreeDisplay()
 }
 
 } // namespace chronochat
+
+
+#if WAF
+#include "chat-dialog.moc"
+#endif

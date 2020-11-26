@@ -272,3 +272,7 @@ DigestTreeScene::reDrawNode(DisplayUserPtr p, QColor rimColor)
 }
 
 } // namespace chronochat
+
+#if WAF
+#include "digest-tree-scene.moc"
+#endif

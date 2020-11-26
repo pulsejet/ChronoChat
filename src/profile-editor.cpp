@@ -98,3 +98,7 @@ ProfileEditor::onOkClicked()
 }
 
 } // namespace chronochat
+
+#if WAF
+#include "profile-editor.moc"
+#endif

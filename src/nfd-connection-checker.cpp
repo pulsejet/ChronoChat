@@ -66,3 +66,7 @@ NfdConnectionChecker::shutdown()
 }
 
 } // namespace chronochat
+
+#if WAF
+#include "nfd-connection-checker.moc"
+#endif

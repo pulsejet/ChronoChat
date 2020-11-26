@@ -91,3 +91,8 @@ AddContactPanel::onContactEndorseInfoReady(const EndorseInfo& endorseInfo)
 }
 
 } // namespace chronochat
+
+
+#if WAF
+#include "add-contact-panel.moc"
+#endif
