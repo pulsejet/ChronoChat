@@ -2,6 +2,7 @@
 set -ex
 
 if has OSX $NODE_LABELS; then
+    # Homebrew doesn't have cryptopp packages, so build from source
     git clone https://github.com/weidai11/cryptopp/
     cd cryptopp
     make -j4
@@ -13,20 +14,14 @@ if has OSX $NODE_LABELS; then
         FORMULAE+=(python)
     fi
 
-    if [[ -n $TRAVIS ]] || [[ -n $GITHUB_ACTIONS ]]; then
+    if [[ -n $GITHUB_ACTIONS ]]; then
         # Travis images come with a large number of pre-installed
         # brew packages, don't waste time upgrading all of them
-        # brew list --versions "${FORMULAE[@]}" || brew update
         for FORMULA in "${FORMULAE[@]}"; do
             brew list --versions "$FORMULA" || brew install "$FORMULA"
         done
 
         brew link qt5 --force
-
-        if [[ -n $TRAVIS ]]; then
-            # Ensure /usr/local/opt/openssl exists
-            brew reinstall openssl
-        fi
     else
         brew update
         brew upgrade
