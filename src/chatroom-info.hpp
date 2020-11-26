@@ -64,7 +64,7 @@ public:
   const Name::Component&
   getName() const;
 
-  const TrustModel
+  TrustModel
   getTrustModel() const;
 
   const Name&
@@ -115,7 +115,7 @@ ChatroomInfo::getName() const
   return m_chatroomName;
 }
 
-inline const ChatroomInfo::TrustModel
+inline ChatroomInfo::TrustModel
 ChatroomInfo::getTrustModel() const
 {
   return m_trustModel;

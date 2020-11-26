@@ -118,6 +118,9 @@ public:
   bool
   operator!=(const Profile& profile) const;
 
+  Profile&
+  operator=(const Profile&) = default;
+
 private:
   template<ndn::encoding::Tag T>
   size_t

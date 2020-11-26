@@ -46,6 +46,7 @@ def configure(conf):
                   'For more information, see https://redmine.named-data.net/projects/nfd/wiki/Boost')
 
     conf.check_cryptopp()
+    conf.check_compiler_flags()
     conf.write_config_header('src/config.h')
 
 def build (bld):

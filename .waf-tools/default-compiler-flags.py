@@ -156,6 +156,8 @@ class GccBasicFlags(CompilerFlags):
                               '-Wno-error=deprecated-declarations', # Bug #3795
                               '-Wno-error=maybe-uninitialized', # Bug #1615
                               '-Wno-unused-parameter',
+                              '-Wno-error=deprecated-copy', # QT5
+                              '-Wno-error=extra-semi', # QT5
                               ]
         flags['LINKFLAGS'] += ['-Wl,-O1']
         return flags

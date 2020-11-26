@@ -91,7 +91,7 @@ public:
     return m_inviterCertificate;
   }
 
-  const uint64_t
+  uint64_t
   getTimestamp() const
   {
     return m_timestamp;
