@@ -2,26 +2,26 @@
 set -ex
 
 if has OSX $NODE_LABELS; then
-    # Homebrew doesn't have cryptopp packages, so build from source
-    git clone https://github.com/weidai11/cryptopp/
-    cd cryptopp
-    make -j4
-    make install
-    cd ..
-
     FORMULAE=(boost openssl pkg-config qt)
     if has OSX-10.13 $NODE_LABELS || has OSX-10.14 $NODE_LABELS; then
         FORMULAE+=(python)
     fi
 
     if [[ -n $GITHUB_ACTIONS ]]; then
+        # Homebrew doesn't have cryptopp packages, so build from source
+        git clone https://github.com/weidai11/cryptopp/
+        cd cryptopp
+        make -j4
+        make install
+        cd ..
+
         # Travis images come with a large number of pre-installed
         # brew packages, don't waste time upgrading all of them
         for FORMULA in "${FORMULAE[@]}"; do
             brew list --versions "$FORMULA" || brew install "$FORMULA"
         done
 
-        brew link qt5 --force
+        brew link qt --force
     else
         brew update
         brew upgrade
