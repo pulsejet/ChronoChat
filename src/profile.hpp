@@ -40,9 +40,7 @@ public:
   typedef std::map<std::string, std::string>::iterator iterator;
   typedef std::map<std::string, std::string>::const_iterator const_iterator;
 
-  Profile()
-  {
-  }
+  Profile() = default;
 
   Profile(const ndn::security::Certificate& identityCertificate);
 
@@ -56,9 +54,8 @@ public:
 
   Profile(const Block& profileWire);
 
-  ~Profile()
-  {
-  }
+  Profile&
+  operator=(const Profile&) = default;
 
   const Block&
   wireEncode() const;
@@ -117,9 +114,6 @@ public:
 
   bool
   operator!=(const Profile& profile) const;
-
-  Profile&
-  operator=(const Profile&) = default;
 
 private:
   template<ndn::encoding::Tag T>

@@ -151,13 +151,12 @@ class GccBasicFlags(CompilerFlags):
                               '-Wextra',
                               '-Werror',
                               '-Wcatch-value=2',
-                              '-Wextra-semi',
+                              # '-Wextra-semi', # prevent noisy output with Qt5
                               '-Wnon-virtual-dtor',
                               '-Wno-error=deprecated-declarations', # Bug #3795
                               '-Wno-error=maybe-uninitialized', # Bug #1615
                               '-Wno-unused-parameter',
-                              '-Wno-error=deprecated-copy', # QT5
-                              '-Wno-error=extra-semi', # QT5
+                              '-Wno-error=deprecated-copy', # Qt5
                               ]
         flags['LINKFLAGS'] += ['-Wl,-O1']
         return flags
