@@ -9,7 +9,7 @@ on:
 jobs:
   linux:
     runs-on: ${{ matrix.os }}
-    name: ${{ matrix.os }} build
+    name: ${{ matrix.os }}
 
     strategy:
       matrix:
@@ -52,7 +52,7 @@ jobs:
     strategy:
       matrix:
         os: [macos-latest]
-        xcode: [12]
+        xcode: [11.3.1, 11.7, 12.2]
 
     env:
       WAF_JOBS: 4
