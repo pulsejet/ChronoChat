@@ -757,7 +757,7 @@ ContactManager::onRefreshBrowseContact()
     Interest interest(certName);
     interest.setInterestLifetime(time::milliseconds(1000));
     interest.setMustBeFresh(true);
-    interest.setCanBePrefix(false);
+    interest.setCanBePrefix(true);
 
     ndn::security::DataValidationSuccessCallback onValidated =
     bind(&ContactManager::onIdentityCertValidated, this, _1);
