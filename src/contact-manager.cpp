@@ -587,29 +587,20 @@ ContactManager::onIdentityUpdated(const QString& identity)
 
   m_contactStorage = make_shared<ContactStorage>(m_identity);
 
-  auto dnsListen = [&](auto... args) {
-    m_dnsListenerHandle = m_face.setInterestFilter(
-      Name(m_identity).append("DNS"),
-      bind(&ContactManager::onDnsInterest, this, _1, _2),
-      bind(&ContactManager::onDnsRegisterFailed, this, _1, _2));
-  };
-  m_dnsListenerHandle.unregister(dnsListen, dnsListen);
+  m_dnsListenerHandle = m_face.setInterestFilter(
+    Name(m_identity).append("DNS"),
+    bind(&ContactManager::onDnsInterest, this, _1, _2),
+    bind(&ContactManager::onDnsRegisterFailed, this, _1, _2));
 
-  auto keyListen = [&](auto... args) {
-    m_keyListenerHandle = m_face.setInterestFilter(
-        Name(m_identity).append("KEY"),
-        bind(&ContactManager::onKeyInterest, this, _1, _2),
-        bind(&ContactManager::onDnsRegisterFailed, this, _1, _2));
-  };
-  m_keyListenerHandle.unregister(keyListen, keyListen);
+  m_keyListenerHandle = m_face.setInterestFilter(
+    Name(m_identity).append("KEY"),
+    bind(&ContactManager::onKeyInterest, this, _1, _2),
+    bind(&ContactManager::onDnsRegisterFailed, this, _1, _2));
 
-  auto profileCertListen = [&](auto... args) {
-    m_profileCertListenerHandle = m_face.setInterestFilter(
+  m_profileCertListenerHandle= m_face.setInterestFilter(
     Name(m_identity).append("PROFILE-CERT"),
     bind(&ContactManager::onKeyInterest, this, _1, _2),
     bind(&ContactManager::onDnsRegisterFailed, this, _1, _2));
-  };
-  m_profileCertListenerHandle.unregister(profileCertListen, profileCertListen);
 
   m_contactList.clear();
   m_contactStorage->getAllContacts(m_contactList);
