@@ -92,6 +92,7 @@ ContactManager::fetchEndorseCertificateInternal(const Name& identity, size_t cer
 
   Interest interest(interestName);
   interest.setInterestLifetime(time::milliseconds(1000));
+  interest.setCanBePrefix(true);
   interest.setMustBeFresh(false);
 
   m_face.expressInterest(interest,
@@ -274,6 +275,7 @@ ContactManager::collectEndorsement()
 
       Interest interest(interestName);
       interest.setMustBeFresh(true);
+      interest.setCanBePrefix(true);
       interest.setInterestLifetime(time::milliseconds(1000));
 
       ndn::security::DataValidationSuccessCallback onValidated =
@@ -585,23 +587,29 @@ ContactManager::onIdentityUpdated(const QString& identity)
 
   m_contactStorage = make_shared<ContactStorage>(m_identity);
 
-  m_dnsListenerHandle.unregister();
-  m_dnsListenerHandle = m_face.setInterestFilter(
-    Name(m_identity).append("DNS"),
-    bind(&ContactManager::onDnsInterest, this, _1, _2),
-    bind(&ContactManager::onDnsRegisterFailed, this, _1, _2));
+  auto dnsListen = [&](auto... args) {
+    m_dnsListenerHandle = m_face.setInterestFilter(
+      Name(m_identity).append("DNS"),
+      bind(&ContactManager::onDnsInterest, this, _1, _2),
+      bind(&ContactManager::onDnsRegisterFailed, this, _1, _2));
+  };
+  m_dnsListenerHandle.unregister(dnsListen, dnsListen);
 
-  m_keyListenerHandle.unregister();
-  m_keyListenerHandle = m_face.setInterestFilter(
-    Name(m_identity).append("KEY"),
-    bind(&ContactManager::onKeyInterest, this, _1, _2),
-    bind(&ContactManager::onDnsRegisterFailed, this, _1, _2));
+  auto keyListen = [&](auto... args) {
+    m_keyListenerHandle = m_face.setInterestFilter(
+        Name(m_identity).append("KEY"),
+        bind(&ContactManager::onKeyInterest, this, _1, _2),
+        bind(&ContactManager::onDnsRegisterFailed, this, _1, _2));
+  };
+  m_keyListenerHandle.unregister(keyListen, keyListen);
 
-  m_profileCertListenerHandle.unregister();
-  m_profileCertListenerHandle = m_face.setInterestFilter(
+  auto profileCertListen = [&](auto... args) {
+    m_profileCertListenerHandle = m_face.setInterestFilter(
     Name(m_identity).append("PROFILE-CERT"),
     bind(&ContactManager::onKeyInterest, this, _1, _2),
     bind(&ContactManager::onDnsRegisterFailed, this, _1, _2));
+  };
+  m_profileCertListenerHandle.unregister(profileCertListen, profileCertListen);
 
   m_contactList.clear();
   m_contactStorage->getAllContacts(m_contactList);
@@ -622,6 +630,7 @@ ContactManager::onFetchContactInfo(const QString& identity)
 
   Interest interest(interestName);
   interest.setInterestLifetime(time::milliseconds(1000));
+  interest.setCanBePrefix(true);
   interest.setMustBeFresh(true);
 
   ndn::security::DataValidationSuccessCallback onValidated =
@@ -757,6 +766,7 @@ ContactManager::onRefreshBrowseContact()
     Interest interest(certName);
     interest.setInterestLifetime(time::milliseconds(1000));
     interest.setMustBeFresh(true);
+    interest.setCanBePrefix(false);
 
     ndn::security::DataValidationSuccessCallback onValidated =
     bind(&ContactManager::onIdentityCertValidated, this, _1);

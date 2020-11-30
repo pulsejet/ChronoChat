@@ -77,7 +77,7 @@ def build (bld):
           )
 
     # Debug tools
-    if bld.env["_DEBUG"]:
+    if "_DEBUG" in bld.env["DEFINES"]:
         for app in bld.path.ant_glob('debug-tools/*.cpp'):
             bld(features=['cxx', 'cxxprogram'],
                 target = '%s' % (str(app.change_ext('','.cpp'))),

@@ -34,7 +34,9 @@ NfdConnectionChecker::run()
       m_nfdConnected = true;
     }
     try {
-      m_face->expressInterest(Interest("/localhost/nfd/status"),
+      Interest interest("/localhost/nfd/status");
+      interest.setCanBePrefix(false);
+      m_face->expressInterest(interest,
                               [&] (const Interest& interest, const Data& data) {
                                 m_face->shutdown();
                               },
