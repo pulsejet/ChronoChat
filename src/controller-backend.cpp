@@ -139,14 +139,10 @@ ControllerBackend::setInvitationListener()
   invitationPrefix.append(m_identity).append("CHRONOCHAT-INVITATION");
   requestPrefix.append(m_identity).append("CHRONOCHAT-INVITATION-REQUEST");
 
-  m_invitationListenerHandle.unregister(
-    bind(&ControllerBackend::onInvitationPrefixReset, this),
-    bind(&ControllerBackend::onInvitationPrefixResetFailed, this, _1));
   m_invitationListenerHandle = m_face.setInterestFilter(invitationPrefix,
     bind(&ControllerBackend::onInvitationInterest, this, _1, _2, offset),
     bind(&ControllerBackend::onInvitationRegisterFailed, this, _1, _2));
 
-  m_requestListenerHandle.unregister();
   m_requestListenerHandle = m_face.setInterestFilter(requestPrefix,
     bind(&ControllerBackend::onInvitationRequestInterest, this, _1, _2, offset),
     [] (const Name& prefix, const std::string& failInfo) {});
@@ -156,16 +152,6 @@ ndn::Name
 ControllerBackend::getInvitationRoutingPrefix()
 {
   return Name("/ndn/broadcast");
-}
-
-void
-ControllerBackend::onInvitationPrefixReset()
-{
-}
-
-void
-ControllerBackend::onInvitationPrefixResetFailed(const std::string& failInfo)
-{
 }
 
 

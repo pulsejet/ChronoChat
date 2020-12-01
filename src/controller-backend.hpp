@@ -57,12 +57,6 @@ private:
   getInvitationRoutingPrefix();
 
   void
-  onInvitationPrefixReset();
-
-  void
-  onInvitationPrefixResetFailed(const std::string& failInfo);
-
-  void
   onInvitationInterest(const ndn::Name& prefix, const ndn::Interest& interest,
                        size_t routingPrefixOffset);
 
@@ -170,8 +164,8 @@ private:
   ndn::security::ValidatorNull m_nullValidator;
 
   // RegisteredPrefixId
-  ndn::RegisteredPrefixHandle m_invitationListenerHandle;
-  ndn::RegisteredPrefixHandle m_requestListenerHandle;
+  ndn::ScopedRegisteredPrefixHandle m_invitationListenerHandle;
+  ndn::ScopedRegisteredPrefixHandle m_requestListenerHandle;
 
   // ChatRoomList
   QStringList m_chatDialogList;
