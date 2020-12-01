@@ -597,7 +597,7 @@ ContactManager::onIdentityUpdated(const QString& identity)
     bind(&ContactManager::onKeyInterest, this, _1, _2),
     bind(&ContactManager::onDnsRegisterFailed, this, _1, _2));
 
-  m_profileCertListenerHandle= m_face.setInterestFilter(
+  m_profileCertListenerHandle = m_face.setInterestFilter(
     Name(m_identity).append("PROFILE-CERT"),
     bind(&ContactManager::onKeyInterest, this, _1, _2),
     bind(&ContactManager::onDnsRegisterFailed, this, _1, _2));
